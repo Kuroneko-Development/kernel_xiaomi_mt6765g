@@ -70,12 +70,12 @@ void tpd_get_dts_info(void)
 			"tpd-max-touch-num", &tpd_dts_data.touch_max_num);
 		of_property_read_u32(node1,
 			"use-tpd-button", &tpd_dts_data.use_tpd_button);
-		pr_debug("[tpd]use-tpd-button = %d\n",
+		no_printk("[tpd]use-tpd-button = %d\n",
 			tpd_dts_data.use_tpd_button);
 		if (of_property_read_u32_array(node1, "tpd-resolution",
 			tpd_dts_data.tpd_resolution,
 			ARRAY_SIZE(tpd_dts_data.tpd_resolution))) {
-			pr_debug("[tpd] resulution is %d %d",
+			no_printk("[tpd] resulution is %d %d",
 				tpd_dts_data.tpd_resolution[0],
 				tpd_dts_data.tpd_resolution[1]);
 		}
@@ -85,7 +85,7 @@ void tpd_get_dts_info(void)
 			if (of_property_read_u32_array(node1, "tpd-key-local",
 				tpd_dts_data.tpd_key_local,
 				ARRAY_SIZE(tpd_dts_data.tpd_key_local)))
-				pr_debug("tpd-key-local: %d %d %d %d",
+				no_printk("tpd-key-local: %d %d %d %d",
 					tpd_dts_data.tpd_key_local[0],
 					tpd_dts_data.tpd_key_local[1],
 					tpd_dts_data.tpd_key_local[2],
@@ -96,19 +96,19 @@ void tpd_get_dts_info(void)
 				memcpy(tpd_dts_data.tpd_key_dim_local,
 					key_dim_local, sizeof(key_dim_local));
 				for (i = 0; i < 4; i++) {
-					pr_debug("[tpd]key[%d].key_x = %d\n", i,
+					no_printk("[tpd]key[%d].key_x = %d\n", i,
 						tpd_dts_data
 							.tpd_key_dim_local[i]
 							.key_x);
-					pr_debug("[tpd]key[%d].key_y = %d\n", i,
+					no_printk("[tpd]key[%d].key_y = %d\n", i,
 						tpd_dts_data
 							.tpd_key_dim_local[i]
 							.key_y);
-					pr_debug("[tpd]key[%d].key_W = %d\n", i,
+					no_printk("[tpd]key[%d].key_W = %d\n", i,
 						tpd_dts_data
 							.tpd_key_dim_local[i]
 							.key_width);
-					pr_debug("[tpd]key[%d].key_H = %d\n", i,
+					no_printk("[tpd]key[%d].key_H = %d\n", i,
 						tpd_dts_data
 							.tpd_key_dim_local[i]
 							.key_height);
@@ -125,18 +125,18 @@ void tpd_get_dts_info(void)
 				"tpd-filter-custom-prameters",
 				(u32 *)tpd_dts_data.touch_filter.W_W,
 				ARRAY_SIZE(tpd_dts_data.touch_filter.W_W)))
-				pr_debug("get tpd-filter-custom-parameters");
+				no_printk("get tpd-filter-custom-parameters");
 			if (of_property_read_u32_array(node1,
 				"tpd-filter-custom-speed",
 				tpd_dts_data.touch_filter.VECLOCITY_THRESHOLD,
 				ARRAY_SIZE(tpd_dts_data
 						.touch_filter
 						.VECLOCITY_THRESHOLD)))
-				pr_debug("get tpd-filter-custom-speed");
+				no_printk("get tpd-filter-custom-speed");
 		}
 		memcpy(&tpd_filter,
 			&tpd_dts_data.touch_filter, sizeof(tpd_filter));
-		pr_debug("[tpd]tpd-filter-enable = %d, pixel_density = %d\n",
+		no_printk("[tpd]tpd-filter-enable = %d, pixel_density = %d\n",
 				tpd_filter.enable, tpd_filter.pixel_density);
 		tpd_dts_data.tpd_use_ext_gpio =
 			of_property_read_bool(node1, "tpd-use-ext-gpio");
@@ -293,18 +293,18 @@ static long tpd_compat_ioctl(
 	switch (cmd) {
 	case COMPAT_TPD_GET_FILTER_PARA:
 		if (arg32 == NULL) {
-			pr_info("invalid argument.");
+			no_printk("invalid argument.");
 			return -EINVAL;
 		}
 		ret = file->f_op->unlocked_ioctl(file, TPD_GET_FILTER_PARA,
 					   (unsigned long)arg32);
 		if (ret) {
-			pr_info("TPD_GET_FILTER_PARA unlocked_ioctl failed.");
+			no_printk("TPD_GET_FILTER_PARA unlocked_ioctl failed.");
 			return ret;
 		}
 		break;
 	default:
-		pr_info("tpd: unknown IOCTL: 0x%08x\n", cmd);
+		no_printk("tpd: unknown IOCTL: 0x%08x\n", cmd);
 		ret = -ENOIOCTLCMD;
 		break;
 	}
@@ -326,7 +326,7 @@ static long tpd_unlocked_ioctl(struct file *file,
 		err = !access_ok(VERIFY_READ,
 			(void __user *)arg, _IOC_SIZE(cmd));
 	if (err) {
-		pr_info("tpd: access error: %08X, (%2d, %2d)\n",
+		no_printk("tpd: access error: %08X, (%2d, %2d)\n",
 			cmd, _IOC_DIR(cmd), _IOC_SIZE(cmd));
 		return -EFAULT;
 	}
@@ -380,7 +380,7 @@ static long tpd_unlocked_ioctl(struct file *file,
 			}
 			break;
 	default:
-		pr_info("tpd: unknown IOCTL: 0x%08x\n", cmd);
+		no_printk("tpd: unknown IOCTL: 0x%08x\n", cmd);
 		err = -ENOIOCTLCMD;
 		break;
 
@@ -565,7 +565,7 @@ static void tpd_create_attributes(struct device *dev, struct tpd_attrs *attrs)
 
 	for (; num > 0;) {
 		if (device_create_file(dev, attrs->attr[--num]))
-			pr_info("mtk_tpd: tpd create attributes file failed\n");
+			no_printk("mtk_tpd: tpd create attributes file failed\n");
 	}
 }
 
@@ -584,7 +584,7 @@ static int tpd_probe(struct platform_device *pdev)
 	TPD_DMESG("enter %s, %d\n", __func__, __LINE__);
 
 	if (misc_register(&tpd_misc_device))
-		pr_info("mtk_tpd: tpd_misc_device register failed\n");
+		no_printk("mtk_tpd: tpd_misc_device register failed\n");
 	tpd_get_gpio_info(pdev);
 	tpd = kmalloc(sizeof(struct tpd_device), GFP_KERNEL);
 	if (tpd == NULL)
@@ -627,13 +627,13 @@ static int tpd_probe(struct platform_device *pdev)
 #ifdef CONFIG_LCM_WIDTH
 		ret = kstrtoul(CONFIG_LCM_WIDTH, 0, &tpd_res_x);
 		if (ret < 0) {
-			pr_info("Touch down get lcm_x failed");
+			no_printk("Touch down get lcm_x failed");
 			return ret;
 		}
 		TPD_RES_X = tpd_res_x;
 		ret = kstrtoul(CONFIG_LCM_HEIGHT, 0, &tpd_res_x);
 		if (ret < 0) {
-			pr_info("Touch down get lcm_y failed");
+			no_printk("Touch down get lcm_y failed");
 			return ret;
 		}
 		TPD_RES_Y = tpd_res_y;
@@ -645,7 +645,7 @@ static int tpd_probe(struct platform_device *pdev)
 		TPD_RES_X = 2048;
 	if (1600 == TPD_RES_Y)
 		TPD_RES_Y = 1536;
-	pr_debug("mtk_tpd: TPD_RES_X = %lu, TPD_RES_Y = %lu\n",
+	no_printk("mtk_tpd: TPD_RES_X = %lu, TPD_RES_Y = %lu\n",
 		TPD_RES_X, TPD_RES_Y);
 
 	tpd_mode = TPD_MODE_NORMAL;
@@ -774,7 +774,7 @@ static int __init tpd_device_init(void)
 
 	res = queue_work(tpd_init_workqueue, &tpd_init_work);
 	if (!res)
-		pr_info("tpd : touch device init failed res:%d\n", res);
+		no_printk("tpd : touch device init failed res:%d\n", res);
 	return 0;
 }
 /* should never be called */

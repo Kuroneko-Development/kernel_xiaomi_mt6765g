@@ -96,7 +96,7 @@ static void keycombo_event(struct input_handle *handle, unsigned int type,
 		state->key_is_down = 1;
 		if (queue_delayed_work(state->wq, &state->key_down_work,
 								state->delay))
-			pr_debug("Key down work already queued!");
+			pr_no_debug("Key down work already queued!");
 	} else if (state->key_is_down) {
 		if (!cancel_delayed_work(&state->key_down_work)) {
 			__pm_stay_awake(&state->combo_up_wake_source);

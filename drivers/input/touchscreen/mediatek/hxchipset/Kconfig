@@ -102,13 +102,6 @@ config TOUCHSCREEN_HIMAX_INSPECT
 		depends on TOUCHSCREEN_HIMAX_INCELL || TOUCHSCREEN_HIMAX_ONCELL
 		help
 		This enables support for HIMAX debug function.
-
-config TOUCHSCREEN_HIMAX_EMBEDDED_FIRMWARE
-	bool "HIMAX embedded firmware function"
-		depends on TOUCHSCREEN_HIMAX_INCELL || TOUCHSCREEN_HIMAX_ONCELL
-		help
-		This enables built-in FW inside kernel as binary array
-
 config HMX_DB
 	bool "HIMAX driver test over Dragon Board"
 	depends on TOUCHSCREEN_HIMAX_COMMON

@@ -30,43 +30,6 @@ config TOUCHSCREEN_PHYSICAL_ROTATION_WITH_LCM
 	  the reported coordination to diagonal position.
 
 	  If unsure, say Y.
-config TOUCHSCREEN_MTK_SOLOMON
-	bool "SOLOMON for Mediatek package"
-	default n
-	help
-	  Say Y here if you have SOLOMON touch panel.
-
-	  If unsure, say N.
-
-	  To compile this dirver as a module, choose M here: the
-	  module will be called.
-
-source "drivers/input/touchscreen/mediatek/SOLOMON/Kconfig"
-
-config TOUCHSCREEN_MTK_FOCALTECH_TS
-	bool "FOCALTECH_TS for Mediatek package"
-	default n
-	help
-	  Say Y here if you have focaltech_touch touch panel.
-
-	  If unsure, say N.
-
-	  To compile this dirver as a module, choose M here: the
-	  module will be called.
-
-source "drivers/input/touchscreen/mediatek/focaltech_touch/Kconfig"
-config TOUCHSCREEN_MTK_GT1151
-	bool "GT1151 for Mediatek package"
-	default n
-	help
-	  Say Y here if you have GT1151 touch panel.
-
-	  If unsure, say N.
-
-	  To compile this dirver as a module, choose M here: the
-	  module will be called.
-
-source "drivers/input/touchscreen/mediatek/GT1151/Kconfig"
 
 config TOUCHSCREEN_HIMAX_CHIPSET
 	bool "HIMAX for Mediatek package"
@@ -81,38 +44,6 @@ config TOUCHSCREEN_HIMAX_CHIPSET
 
 source "drivers/input/touchscreen/mediatek/hxchipset/Kconfig"
 
-config TOUCHSCREEN_MTK_NT36xxx
-	bool "NT36xxx for Mediatek package"
-	default n
-	help
-	  Say Y here if you have NT36xxx touch panel.
-
-	  If unsure, say N.
-
-	  To compile this dirver as a module, choose M here: the
-	  module will be called.
-
-source "drivers/input/touchscreen/mediatek/NT36xxx/Kconfig"
-
-
-config TOUCHSCREEN_MTK_NT36572_COMMON
-         bool "NT36572 for Mediatek package"
-         default n
-         help
-           Say Y here if you have NT36572 touch panel.
-
-           If unsure, say N.
-
-         help
-           Say Y here if you have NT36572 touch panel.
-
-           If unsure, say N.
-
-           To compile this dirver as a module, choose M here: the
-           module will be called.
-
-source "drivers/input/touchscreen/mediatek/nt36572_common/Kconfig"
-
 config TOUCHSCREEN_MTK_FOCALTECH_HD
 	bool "Focaltech Touchscreen"
 	depends on I2C
@@ -120,15 +51,9 @@ config TOUCHSCREEN_MTK_FOCALTECH_HD
 	  Say Y here if you have Focaltech touch panel.
 	  If unsure, say N.
 
-config TOUCHSCREEN_MTK_FOCALTECH_FHD
-	bool "Focaltech FHD Touchscreen"
-	depends on I2C
-	help
-	  Say Y here if you have Focaltech touch panel.
-	  If unsure, say N.
-
 source "drivers/input/touchscreen/mediatek/ft8006s_spi/Kconfig"
 source "drivers/input/touchscreen/mediatek/nt36xxx_spi/Kconfig"
+source "drivers/input/touchscreen/mediatek/chipone/Kconfig"
 
 config TOUCHSCREEN_COMMON
 	bool "touchscreen for xiaomi C3L project"

@@ -3428,7 +3428,7 @@ static int synaptics_rmi4_check_status(struct synaptics_rmi4_data *rmi4_data,
 
 	if (status.flash_prog == 1) {
 		rmi4_data->flash_prog_mode = true;
-		pr_notice("%s: In flash prog mode, status = 0x%02x\n",
+		pr_no_notice("%s: In flash prog mode, status = 0x%02x\n",
 				__func__,
 				status.status_code);
 	} else {

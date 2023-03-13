@@ -89,12 +89,12 @@ char *g_guest_info_item[] = {
 
 uint32_t g_hx_chip_inited;
 
-#if defined(__EMBEDDED_FW__)
+/*#if defined(__EMBEDDED_FW__)
 struct firmware g_embedded_fw = {
 	.data = _binary___Himax_firmware_bin_start,
 };
 #endif
-
+*/
 #if defined(HX_BOOT_UPGRADE) || defined(HX_ZERO_FLASH)
 bool g_boot_upgrade_flag;
 const struct firmware *hxfw;
@@ -2808,10 +2808,9 @@ int himax_chip_common_init(void)
 		E("prepare kp_file_open_name failed!\n");
 		goto err_xfer_buff_fail;
 	}
-#if defined(__EMBEDDED_FW__)
-	g_embedded_fw.size = (size_t)_binary___Himax_firmware_bin_end -
+/*	g_embedded_fw.size = (size_t)_binary___Himax_firmware_bin_end -
 			(size_t)_binary___Himax_firmware_bin_start;
-#endif
+*/
 	ts->xfer_buff = devm_kzalloc(ts->dev, 128 * sizeof(uint8_t),
 			GFP_KERNEL);
 	if (ts->xfer_buff == NULL) {

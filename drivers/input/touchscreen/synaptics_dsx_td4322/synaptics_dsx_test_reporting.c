@@ -3630,7 +3630,7 @@ static ssize_t test_sysfs_tddi_ee_short_store(struct device *dev,
 		}
 	}
 #ifdef F54_SHOW_MAX_MIN
-	pr_info("%s : image part 1 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
+	pr_no_info("%s : image part 1 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
 #endif
 
 	/* step 3 */
@@ -3669,7 +3669,7 @@ static ssize_t test_sysfs_tddi_ee_short_store(struct device *dev,
 	}
 
 #ifdef F54_SHOW_MAX_MIN
-	pr_info("%s : image part 2 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
+	pr_no_info("%s : image part 2 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
 #endif
 
 	/* step 4 */
@@ -3877,7 +3877,7 @@ static ssize_t test_sysfs_tddi_noise_store(struct device *dev,
 	}
 
 #ifdef F54_SHOW_MAX_MIN
-	pr_info("%s : data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
+	pr_no_info("%s : data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
 #endif
 
 	retval = count;
@@ -4512,7 +4512,7 @@ static ssize_t test_sysfs_tddi_amp_open_store(struct device *dev,
 		}
 	}
 #ifdef F54_SHOW_MAX_MIN
-	pr_info("%s : ph.1 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
+	pr_no_info("%s : ph.1 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
 #endif
 
 	memset(p_rt92_image_2, 0x00, tx_num * rx_num * 2);
@@ -4549,7 +4549,7 @@ static ssize_t test_sysfs_tddi_amp_open_store(struct device *dev,
 		}
 	}
 #ifdef F54_SHOW_MAX_MIN
-	pr_info("%s : ph.2 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
+	pr_no_info("%s : ph.2 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
 #endif
 
 
@@ -5574,7 +5574,7 @@ static ssize_t test_sysfs_tddi_amp_electrode_open_store(struct device *dev,
 		}
 	}
 #ifdef F54_SHOW_MAX_MIN
-	pr_info("%s : ph.1 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
+	pr_no_info("%s : ph.1 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
 #endif
 
 	err_index = sprintf(g_tddi_amp_open_data_error + err_index, "count %d\n", err_count);
@@ -5615,7 +5615,7 @@ static ssize_t test_sysfs_tddi_amp_electrode_open_store(struct device *dev,
 		}
 	}
 #ifdef F54_SHOW_MAX_MIN
-	pr_info("%s : ph.2 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
+	pr_no_info("%s : ph.2 data range (max, min) = (%-4d, %-4d)\n", __func__, max, min);
 #endif
 
 	err_index = sprintf(g_tddi_amp_open_data_error + err_index, "count %d\n", err_count);

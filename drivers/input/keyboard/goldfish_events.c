@@ -167,7 +167,7 @@ static int events_probe(struct platform_device *pdev)
 	for (i = 0; i < keymapnamelen; i++)
 		edev->name[i] = __raw_readb(edev->addr + REG_DATA + i);
 
-	pr_debug("events_probe() keymap=%s\n", edev->name);
+	pr_no_debug("events_probe() keymap=%s\n", edev->name);
 
 	input_dev->name = edev->name;
 	input_dev->id.bustype = BUS_HOST;

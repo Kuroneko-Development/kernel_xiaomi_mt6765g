@@ -604,7 +604,7 @@ static int spidev_open(struct inode *inode, struct file *filp)
 	}
 
 	if (status) {
-		pr_debug("spidev: nothing for minor %d\n", iminor(inode));
+		no_printk("spidev: nothing for minor %d\n", iminor(inode));
 		goto err_find_dev;
 	}
 
@@ -748,7 +748,7 @@ static inline void spidev_probe_acpi(struct spi_device *spi) {}
 #endif
 
 /*-------------------------------------------------------------------------*/
-#define SPIS_DEBUG(fmt, args...) pr_info(fmt, ##args)
+#define SPIS_DEBUG(fmt, args...) no_printk(fmt, ##args)
 
 void spi_transfer_malloc(struct spi_transfer *trans)
 {

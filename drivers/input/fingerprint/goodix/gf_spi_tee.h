@@ -42,7 +42,7 @@
 extern u8 g_debug_level;
 #define gf_debug(level, fmt, args...) do { \
 			if (g_debug_level >= level) {\
-				pr_info("[gf] " fmt, ##args); \
+				no_printk("[gf] " fmt, ##args); \
 			} \
 		} while (0)
 

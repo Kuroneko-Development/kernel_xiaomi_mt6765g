@@ -70,7 +70,7 @@ static int apanel_probe(struct i2c_client *, const struct i2c_device_id *);
 
 static void report_key(struct input_dev *input, unsigned keycode)
 {
-	pr_debug(APANEL ": report key %#x\n", keycode);
+	pr_no_debug(APANEL ": report key %#x\n", keycode);
 	input_report_key(input, keycode, 1);
 	input_sync(input);
 
@@ -263,7 +263,7 @@ static __init const void __iomem *bios_signature(const void __iomem *bios)
 				    sizeof(signature)-1))
 			return bios + offset;
 	}
-	pr_notice(APANEL ": Fujitsu BIOS signature '%s' not found...\n",
+	pr_no_notice(APANEL ": Fujitsu BIOS signature '%s' not found...\n",
 		  signature);
 	return NULL;
 }
@@ -296,7 +296,7 @@ static int __init apanel_init(void)
 		slave = readb(p + 3) >> 1;
 
 		if (slave != i2c_addr) {
-			pr_notice(APANEL ": only one SMBus slave "
+			pr_no_notice(APANEL ": only one SMBus slave "
 				  "address supported, skipping device...\n");
 			continue;
 		}
@@ -312,12 +312,12 @@ static int __init apanel_init(void)
 		}
 
 		if (devno >= APANEL_DEV_MAX)
-			pr_notice(APANEL ": unknown device %u found\n", devno);
+			pr_no_notice(APANEL ": unknown device %u found\n", devno);
 		else if (device_chip[devno] != CHIP_NONE)
 			pr_warning(APANEL ": duplicate entry for devno %u\n", devno);
 
 		else if (method != 1 && method != 2 && method != 4) {
-			pr_notice(APANEL ": unknown method %u for devno %u\n",
+			pr_no_notice(APANEL ": unknown method %u for devno %u\n",
 				  method, devno);
 		} else {
 			device_chip[devno] = (enum apanel_chip) chip;
@@ -327,7 +327,7 @@ static int __init apanel_init(void)
 	iounmap(bios);
 
 	if (found == 0) {
-		pr_info(APANEL ": no input devices reported by BIOS\n");
+		pr_no_info(APANEL ": no input devices reported by BIOS\n");
 		return -EIO;
 	}
 

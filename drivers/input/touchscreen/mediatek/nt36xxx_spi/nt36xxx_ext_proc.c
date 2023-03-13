@@ -681,103 +681,8 @@ Description:
 return:
 	Executive outcomes. 0---succeed.
 *******************************************************/
-static int32_t c_tp_data_dump_show(struct seq_file *m, void *v)
-{
-	int32_t i = 0;
-	int32_t j = 0;
 
-	seq_printf(m, "\nRAW DATA\n");
-#if 0 //0
-	for (i = 0; i < ts->y_num; i++) {
-		for (j = 0; j < ts->x_num; j++) {
-			seq_printf(m, "%6d", xdata[ts->x_num * i + j]);
-		}
-		seq_puts(m, "\n");
-	}
-#endif
-#if 1 //90
-	for (i = 0; i < ts->x_num; i++) {
-		for (j = 0; j < ts->y_num; j++) {
-			seq_printf(m, "%6d", xdata[ts->x_num * j + (ts->x_num - 1 - i)]);
-		}
-		seq_puts(m, "\n");
-	}
-#endif
-#if 0 //180
-	for (i = 0; i < ts->y_num; i++) {
-		for (j = 0; j < ts->x_num; j++) {
-			seq_printf(m, "%6d", xdata[ts->x_num * (ts->y_num - 1 - i) + j]);
-		}
-		seq_puts(m, "\n");
-	}
-#endif
-#if 0 //270
-	for (i = 0; i < ts->x_num; i++) {
-		for (j = 0; j < ts->y_num; j++) {
-			seq_printf(m, "%6d", xdata[ts->x_num * (ts->y_num - 1 - j) + i]);
-		}
-		seq_puts(m, "\n");
-	}
-#endif
-
-
-#if TOUCH_KEY_NUM > 0
-	for (i = 0; i < TOUCH_KEY_NUM; i++) {
-		seq_printf(m, "%6d", xdata[ts->x_num * ts->y_num + i]);
-	}
-	seq_puts(m, "\n");
-#endif
-
-	seq_printf(m, "\nDIFF DATA\n");
-#if 0 //0
-	for (i = 0; i < ts->y_num; i++) {
-		for (j = 0; j < ts->x_num; j++) {
-			seq_printf(m, "%6d", diff_data[ts->x_num * i + j]);
-		}
-		seq_puts(m, "\n");
-	}
-#endif
-#if 1 //90
-	for (i = 0; i < ts->x_num; i++) {
-		for (j = 0; j < ts->y_num; j++) {
-			seq_printf(m, "%6d", diff_data[ts->x_num * j + (ts->x_num - 1 - i)]);
-		}
-		seq_puts(m, "\n");
-	}
-#endif
-#if 0 //180
-	for (i = 0; i < ts->y_num; i++) {
-		for (j = 0; j < ts->x_num; j++) {
-			seq_printf(m, "%6d", diff_data[ts->x_num * (ts->y_num - 1 - i) + j]);
-		}
-		seq_puts(m, "\n");
-	}
-#endif
-#if 0 //270
-	for (i = 0; i < ts->x_num; i++) {
-		for (j = 0; j < ts->y_num; j++) {
-			seq_printf(m, "%6d", diff_data[ts->x_num * (ts->y_num - 1 - j) + i]);
-		}
-		seq_puts(m, "\n");
-	}
-#endif
-
-#if TOUCH_KEY_NUM > 0
-	for (i = 0; i < TOUCH_KEY_NUM; i++) {
-		seq_printf(m, "%6d", diff_data[ts->x_num * ts->y_num + i]);
-	}
-	seq_puts(m, "\n");
-#endif
-
-	return 0;
-}
-
-const struct seq_operations lct_tp_data_dump_seq_ops = {
-	.start  = c_start,
-	.next   = c_next,
-	.stop   = c_stop,
-	.show   = c_tp_data_dump_show
-};
+const struct seq_operations lct_tp_data_dump_seq_ops = {};
 
 /*******************************************************
 Description:
@@ -786,61 +691,8 @@ Description:
 return:
 	Executive outcomes. 0---succeed.
 *******************************************************/
-static int32_t lct_tp_data_dump_open(struct inode *inode, struct file *file)
-{
-	if (mutex_lock_interruptible(&ts->lock)) {
-		return -ERESTARTSYS;
-	}
 
-	NVT_LOG("++\n");
-
-#if NVT_TOUCH_ESD_PROTECT
-	nvt_esd_check_enable(false);
-#endif /* #if NVT_TOUCH_ESD_PROTECT */
-
-	if (nvt_clear_fw_status()) {
-		mutex_unlock(&ts->lock);
-		return -EAGAIN;
-	}
-
-	nvt_change_mode(TEST_MODE_2);
-
-	if (nvt_check_fw_status()) {
-		mutex_unlock(&ts->lock);
-		return -EAGAIN;
-	}
-
-	if (nvt_get_fw_info()) {
-		mutex_unlock(&ts->lock);
-		return -EAGAIN;
-	}
-
-	if (nvt_get_fw_pipe() == 0)
-		nvt_read_mdata(ts->mmap->RAW_PIPE0_ADDR, ts->mmap->RAW_BTN_PIPE0_ADDR);
-	else
-		nvt_read_mdata(ts->mmap->RAW_PIPE1_ADDR, ts->mmap->RAW_BTN_PIPE1_ADDR);
-
-	if (nvt_get_fw_pipe() == 0)
-		nvt_read_diff_mdata(ts->mmap->DIFF_PIPE0_ADDR, ts->mmap->DIFF_BTN_PIPE0_ADDR);
-	else
-		nvt_read_diff_mdata(ts->mmap->DIFF_PIPE1_ADDR, ts->mmap->DIFF_BTN_PIPE1_ADDR);
-
-	nvt_change_mode(NORMAL_MODE);
-
-	mutex_unlock(&ts->lock);
-
-	NVT_LOG("--\n");
-
-	return seq_open(file, &lct_tp_data_dump_seq_ops);
-}
-
-static const struct file_operations lct_tp_data_dump_fops = {
-	.owner = THIS_MODULE,
-	.open = lct_tp_data_dump_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = seq_release,
-};
+static const struct file_operations lct_tp_data_dump_fops = {};
 /*2019.12.10 longcheer taocheng add for charger mode & other node start*/
 /*function description*/
 int32_t nvt_set_pf_switch(uint8_t pf_switch)

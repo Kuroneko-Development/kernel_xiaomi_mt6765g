@@ -1390,7 +1390,7 @@ static int fwu_write_f34_v5v6_command(unsigned char cmd)
 			command = CMD_V5V6_ERASE_ALL;
 		else
 			command = CMD_V5V6_ERASE_UI;
-		pr_info("%s %d\n", __func__, command);
+		pr_no_info("%s %d\n", __func__, command);
 		break;
 	case CMD_ERASE_UI_CONFIG:
 		command = CMD_V5V6_ERASE_UI_CONFIG;
@@ -3033,42 +3033,42 @@ static int fwu_do_reflash(void)
 		retval = fwu_write_partition_table_v7();
 		if (retval < 0)
 			return retval;
-		pr_notice("%s: Partition table programmed\n", __func__);
+		pr_no_notice("%s: Partition table programmed\n", __func__);
 	} else if (fwu->bl_version == BL_V8) {
 		retval = fwu_write_partition_table_v8();
 		if (retval < 0)
 			return retval;
-		pr_notice("%s: Partition table programmed\n", __func__);
+		pr_no_notice("%s: Partition table programmed\n", __func__);
 	}
 
 	fwu->config_area = UI_CONFIG_AREA;
 
 	if (fwu->flash_properties.has_disp_config &&
 			fwu->img.contains_disp_config && (fwu->erase_all | fwu->dp_crc_failed)) {
-		pr_info("%s ui update\n", __func__);
+		pr_no_info("%s ui update\n", __func__);
 		retval = fwu_write_dp_configuration();
 		if (retval < 0)
 			return retval;
-		pr_notice("%s: Display configuration programmed\n", __func__);
+		pr_no_notice("%s: Display configuration programmed\n", __func__);
 	}
 
 	retval = fwu_write_firmware();
 
 	if (retval < 0)
 		return retval;
-	pr_notice("%s: Firmware programmed\n", __func__);
+	pr_no_notice("%s: Firmware programmed\n", __func__);
 
 
 	retval = fwu_write_ui_configuration();
 	if (retval < 0)
 		return retval;
-	pr_notice("%s: Configuration programmed\n", __func__);
+	pr_no_notice("%s: Configuration programmed\n", __func__);
 
 	if (fwu->has_guest_code && fwu->img.contains_guest_code) {
 		retval = fwu_write_guest_code();
 		if (retval < 0)
 			return retval;
-		pr_notice("%s: Guest code programmed\n", __func__);
+		pr_no_notice("%s: Guest code programmed\n", __func__);
 	}
 
 
@@ -3185,7 +3185,7 @@ static int fwu_do_lockdown_v7(void)
 	if (retval < 0)
 		return retval;
 
-	pr_notice("%s: Lockdown programmed\n", __func__);
+	pr_no_notice("%s: Lockdown programmed\n", __func__);
 
 	return retval;
 }
@@ -3221,7 +3221,7 @@ static int fwu_do_lockdown_v5v6(void)
 	if (retval < 0)
 		return retval;
 
-	pr_notice("%s: Lockdown programmed\n", __func__);
+	pr_no_notice("%s: Lockdown programmed\n", __func__);
 
 	return retval;
 }
@@ -3260,7 +3260,7 @@ static int fwu_start_write_guest_code(void)
 
 	mutex_lock(&rmi4_data->rmi4_exp_init_mutex);
 
-	pr_notice("%s: Start of write guest code process\n", __func__);
+	pr_no_notice("%s: Start of write guest code process\n", __func__);
 
 	retval = fwu_enter_flash_prog();
 	if (retval < 0)
@@ -3278,12 +3278,12 @@ static int fwu_start_write_guest_code(void)
 	if (retval < 0)
 		goto exit;
 
-	pr_notice("%s: Guest code programmed\n", __func__);
+	pr_no_notice("%s: Guest code programmed\n", __func__);
 
 exit:
 	rmi4_data->reset_device(rmi4_data);
 
-	pr_notice("%s: End of write guest code process\n", __func__);
+	pr_no_notice("%s: End of write guest code process\n", __func__);
 
 	mutex_unlock(&rmi4_data->rmi4_exp_init_mutex);
 
@@ -3372,7 +3372,7 @@ static int fwu_start_write_config(void)
 
 	mutex_lock(&rmi4_data->rmi4_exp_init_mutex);
 
-	pr_notice("%s: Start of write config process\n", __func__);
+	pr_no_notice("%s: Start of write config process\n", __func__);
 
 	config_area = fwu->config_area;
 
@@ -3410,7 +3410,7 @@ static int fwu_start_write_config(void)
 		break;
 	}
 
-	pr_notice("%s: Config written\n", __func__);
+	pr_no_notice("%s: Config written\n", __func__);
 
 exit:
 	switch (fwu->config_area) {
@@ -3423,7 +3423,7 @@ exit:
 		break;
 	}
 
-	pr_notice("%s: End of write config process\n", __func__);
+	pr_no_notice("%s: End of write config process\n", __func__);
 
 	mutex_unlock(&rmi4_data->rmi4_exp_init_mutex);
 
@@ -3527,7 +3527,7 @@ static int fwu_start_reflash(void)
 		dev_info(&fwu->rmi4_data->i2c_client->dev,
 				"%s: Device in bootloader mode\n",
 				__func__);
-		pr_info("%s in bl mode\n", __func__);
+		pr_no_info("%s in bl mode\n", __func__);
 		fwu_synaptics_read_crc_err(); /* for OPPO*/
 	}
 
@@ -3602,7 +3602,7 @@ exit:
 	if (fw_entry)
 		release_firmware(fw_entry);
 
-	pr_notice("%s: End of reflash process\n", __func__);
+	pr_no_notice("%s: End of reflash process\n", __func__);
 
 	mutex_unlock(&rmi4_data->rmi4_exp_init_mutex);
 
@@ -3783,7 +3783,7 @@ static int fwu_start_recovery(void)
 
 	mutex_lock(&rmi4_data->rmi4_exp_init_mutex);
 
-	pr_notice("%s: Start of recovery process\n", __func__);
+	pr_no_notice("%s: Start of recovery process\n", __func__);
 
 	retval = rmi4_data->irq_enable(rmi4_data, false);
 	if (retval < 0) {
@@ -3801,7 +3801,7 @@ static int fwu_start_recovery(void)
 		goto exit;
 	}
 
-	pr_notice("%s: External flash erased\n", __func__);
+	pr_no_notice("%s: External flash erased\n", __func__);
 
 	retval = fwu_recovery_write_chunk();
 	if (retval < 0) {
@@ -3811,7 +3811,7 @@ static int fwu_start_recovery(void)
 		goto exit;
 	}
 
-	pr_notice("%s: Chunk data programmed\n", __func__);
+	pr_no_notice("%s: Chunk data programmed\n", __func__);
 
 	retval = fwu_recovery_reset();
 	if (retval < 0) {
@@ -3821,14 +3821,14 @@ static int fwu_start_recovery(void)
 		goto exit;
 	}
 
-	pr_notice("%s: Recovery mode reset issued\n", __func__);
+	pr_no_notice("%s: Recovery mode reset issued\n", __func__);
 
 	rmi4_data->reset_device(rmi4_data);
 
 	retval = 0;
 
 exit:
-	pr_notice("%s: End of recovery process\n", __func__);
+	pr_no_notice("%s: End of recovery process\n", __func__);
 
 	mutex_unlock(&rmi4_data->rmi4_exp_init_mutex);
 
@@ -4002,7 +4002,7 @@ static ssize_t fwu_sysfs_do_reflash_store(struct device *dev,
 
 /*
 *	if (!fwu->ext_data_source) {
-*		pr_info("%s: %d", __func__, __LINE__);
+*		pr_no_info("%s: %d", __func__, __LINE__);
 *		return -EINVAL;
 *	}
 *	else

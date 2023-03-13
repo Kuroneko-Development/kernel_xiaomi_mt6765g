@@ -412,6 +412,6 @@ static int32_t PS_Config_Lmt_FW_Diff_N[40 *40] = {
 #endif /* #if TOUCH_KEY_NUM > 0 */
 };
 
-static int32_t PS_Config_Diff_Test_Frame = 50;
+static int32_t PS_Config_Diff_Test_Frame = 90;
 
 #endif /* #if NVT_TOUCH_MP */

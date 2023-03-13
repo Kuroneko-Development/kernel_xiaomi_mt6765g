@@ -26,14 +26,12 @@ module_param_array(tpd_calmat, int, &tpd_calmat_size, 0664);
 module_param_array(tpd_def_calmat, int, &tpd_def_calmat_size, 0444);
 /* #endif */
 /* #ifdef TPD_TYPE_CAPACITIVE */
-int tpd_type_cap;
 
 int tpd_v_magnify_x = 10;
 int tpd_v_magnify_y = 10;
 module_param(tpd_v_magnify_x, int, 0664);
 module_param(tpd_v_magnify_y, int, 0664);
 
-module_param(tpd_type_cap, int, 0444);
 int tpd_firmware_version[2] = { 0, 0 };
 
 int tpd_firmware_version_size = 2;

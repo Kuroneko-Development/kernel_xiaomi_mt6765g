@@ -31,16 +31,11 @@
 #include <linux/kobject.h>
 #include <linux/regulator/consumer.h>
 
-/*debug macros */
-#define TPD_DEBUG
-#define TPD_DEBUG_CODE
 /* #define TPD_DEBUG_TRACK */
-#define TPD_DMESG(a, arg...) \
-	pr_info(TPD_DEVICE ":[%s:%d] " a, __func__, __LINE__, ##arg)
+#define TPD_DMESG(a, arg...) 
 #if defined(TPD_DEBUG)
 #undef TPD_DEBUG
-#define TPD_DEBUG(a, arg...) \
-	pr_info(TPD_DEVICE ":[%s:%d] " a, __func__, __LINE__, ##arg)
+#define TPD_DEBUG(a, arg...) 
 #else
 #define TPD_DEBUG(arg...)
 #endif

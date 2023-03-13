@@ -56,26 +56,12 @@ extern int kpd_klog_en;
 extern atomic_t vol_down_long_press_flag;
 #endif
 
-#define KPD_DEBUG	1
 #define SET_KPD_KCOL		_IO('k', 29)
 #define KPD_SAY		"kpd: "
 
-#if KPD_DEBUG
-#define kpd_print(fmt, arg...)	do { \
-	if (kpd_klog_en) \
-		pr_debug(KPD_SAY fmt, ##arg); \
-	} while (0)
-#define kpd_info(fmt, arg...)	do { \
-	if (kpd_klog_en) \
-		pr_info(KPD_SAY fmt, ##arg); \
-	} while (0)
-#define kpd_notice(fmt, arg...)	 \
-			pr_notice(KPD_SAY fmt, ##arg)
-
-#else
-#define kpd_print(fmt, arg...)	do {} while (0)
-#define kpd_info(fmt, arg...)	do {} while (0)
-#endif
+#define kpd_print(fmt, arg...)
+#define kpd_info(fmt, arg...)
+#define kpd_notice(fmt, arg...)
 
 #define KPD_HAS_SLIDE_QWERTY	0
 #endif				/* __KPD_H__ */

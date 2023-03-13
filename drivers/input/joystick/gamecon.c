@@ -945,7 +945,7 @@ static void gc_attach(struct parport *pp)
 	}
 
 	if (port_idx == GC_MAX_PORTS) {
-		pr_debug("Not using parport%d.\n", pp->number);
+		pr_no_debug("Not using parport%d.\n", pp->number);
 		return;
 	}
 	pads = gc_cfg[port_idx].args + 1;

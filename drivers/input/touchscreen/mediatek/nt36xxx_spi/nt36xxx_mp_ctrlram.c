@@ -39,11 +39,15 @@
 #define FW_CC_CSV_FILE "/data/vendor/touchpad/NVT_FWCCTest.csv"
 #define NOISE_TEST_CSV_FILE "/data/vendor/touchpad/NVT_NoiseTest.csv"
 
+#ifndef CONFIG_KURONEKO
 #define nvt_mp_seq_printf(m, fmt, args...) do {	\
 	seq_printf(m, fmt, ##args);	\
 	if (!nvt_mp_test_result_printed)	\
 		printk(fmt, ##args);	\
 } while (0)
+#else
+#define nvt_mp_seq_printf(m, fmt, args...)
+#endif
 
 static uint8_t *RecordResult_Short = NULL;
 static uint8_t *RecordResult_Open = NULL;
@@ -262,7 +266,7 @@ static void nvt_print_data_log_in_one_line(int32_t *data, int32_t data_num)
 		sprintf(tmp_log + i * 7, "%5d, ", data[i]);
 	}
 	tmp_log[data_num * 7] = '\0';
-	pr_info("%s", tmp_log);
+	no_printk("%s", tmp_log);
 	if (tmp_log) {
 		kfree(tmp_log);
 		tmp_log = NULL;
@@ -286,7 +290,7 @@ static void nvt_print_result_log_in_one_line(uint8_t *result, int32_t result_num
 		sprintf(tmp_log + i * 6, "0x%02X, ", result[i]);
 	}
 	tmp_log[result_num * 6] = '\0';
-	pr_info("%s", tmp_log);
+	no_printk("%s", tmp_log);
 	if (tmp_log) {
 		kfree(tmp_log);
 		tmp_log = NULL;
@@ -308,11 +312,11 @@ static void nvt_print_lmt_array(int32_t *array, int32_t x_ch, int32_t y_ch)
 
 	for (j = 0; j < y_ch; j++) {
 		nvt_print_data_log_in_one_line(array + j * x_ch, x_ch);
-		pr_info("\n");
+		no_printk("\n");
 	}
 #if TOUCH_KEY_NUM > 0
 	nvt_print_data_log_in_one_line(array + y_ch * x_ch, Key_Channel);
-	pr_info("\n");
+	no_printk("\n");
 #endif /* #if TOUCH_KEY_NUM > 0 */
 }
 
@@ -321,33 +325,33 @@ static void nvt_print_criteria(void)
 	NVT_LOG("++\n");
 
 	//---PS_Config_Lmt_Short_Rawdata---
-	pr_info("PS_Config_Lmt_Short_Rawdata_P:\n");
+	no_printk("PS_Config_Lmt_Short_Rawdata_P:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_Short_Rawdata_P, X_Channel, Y_Channel);
-	pr_info("PS_Config_Lmt_Short_Rawdata_N:\n");
+	no_printk("PS_Config_Lmt_Short_Rawdata_N:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_Short_Rawdata_N, X_Channel, Y_Channel);
 
 	//---PS_Config_Lmt_Open_Rawdata---
-	pr_info("PS_Config_Lmt_Open_Rawdata_P:\n");
+	no_printk("PS_Config_Lmt_Open_Rawdata_P:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_Open_Rawdata_P, X_Channel, Y_Channel);
-	pr_info("PS_Config_Lmt_Open_Rawdata_N:\n");
+	no_printk("PS_Config_Lmt_Open_Rawdata_N:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_Open_Rawdata_N, X_Channel, Y_Channel);
 
 	//---PS_Config_Lmt_FW_Rawdata---
-	pr_info("PS_Config_Lmt_FW_Rawdata_P:\n");
+	no_printk("PS_Config_Lmt_FW_Rawdata_P:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_FW_Rawdata_P, X_Channel, Y_Channel);
-	pr_info("PS_Config_Lmt_FW_Rawdata_N:\n");
+	no_printk("PS_Config_Lmt_FW_Rawdata_N:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_FW_Rawdata_N, X_Channel, Y_Channel);
 
 	//---PS_Config_Lmt_FW_CC---
-	pr_info("PS_Config_Lmt_FW_CC_P:\n");
+	no_printk("PS_Config_Lmt_FW_CC_P:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_FW_CC_P, X_Channel, Y_Channel);
-	pr_info("PS_Config_Lmt_FW_CC_N:\n");
+	no_printk("PS_Config_Lmt_FW_CC_N:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_FW_CC_N, X_Channel, Y_Channel);
 
 	//---PS_Config_Lmt_FW_Diff---
-	pr_info("PS_Config_Lmt_FW_Diff_P:\n");
+	no_printk("PS_Config_Lmt_FW_Diff_P:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_FW_Diff_P, X_Channel, Y_Channel);
-	pr_info("PS_Config_Lmt_FW_Diff_N:\n");
+	no_printk("PS_Config_Lmt_FW_Diff_N:\n");
 	nvt_print_lmt_array(PS_Config_Lmt_FW_Diff_N, X_Channel, Y_Channel);
 
 	NVT_LOG("--\n");
@@ -369,7 +373,7 @@ static int32_t nvt_save_rawdata_to_csv(int32_t *rawdata, uint8_t x_ch, uint8_t y
 	int32_t keydata_output_offset = 0;
 #endif /* #if TOUCH_KEY_NUM > 0 */
 
-	pr_info("%s:++\n", __func__);
+	no_printk("%s:++\n", __func__);
 	fbufp = (char *)kzalloc(8192, GFP_KERNEL);
 	if (!fbufp) {
 		NVT_ERR("kzalloc for fbufp failed!\n");
@@ -382,7 +386,7 @@ static int32_t nvt_save_rawdata_to_csv(int32_t *rawdata, uint8_t x_ch, uint8_t y
 			sprintf(fbufp + iArrayIndex * 7 + y * 2, "%5d, ", rawdata[iArrayIndex]);
 		}
 		nvt_print_data_log_in_one_line(rawdata + y * x_ch, x_ch);
-		pr_info("\n");
+		no_printk("\n");
 		sprintf(fbufp + (iArrayIndex + 1) * 7 + y * 2,"\r\n");
 	}
 #if TOUCH_KEY_NUM > 0
@@ -392,7 +396,7 @@ static int32_t nvt_save_rawdata_to_csv(int32_t *rawdata, uint8_t x_ch, uint8_t y
 		sprintf(fbufp + keydata_output_offset + k * 7, "%5d, ", rawdata[iArrayIndex]);
 	}
 	nvt_print_data_log_in_one_line(rawdata + y_ch * x_ch, Key_Channel);
-	pr_info("\n");
+	no_printk("\n");
 	sprintf(fbufp + y_ch * x_ch * 7 + y_ch * 2 + Key_Channel * 7, "\r\n");
 #endif /* #if TOUCH_KEY_NUM > 0 */
 
@@ -440,7 +444,7 @@ static int32_t nvt_save_rawdata_to_csv(int32_t *rawdata, uint8_t x_ch, uint8_t y
 		fbufp = NULL;
 	}
 
-	pr_info("%s:--\n", __func__);
+	no_printk("%s:--\n", __func__);
 
 	return 0;
 }
@@ -553,7 +557,7 @@ static int32_t nvt_read_baseline(int32_t *xdata)
 	}
 #endif /* #if TOUCH_KEY_NUM > 0 */
 
-	pr_info("%s:\n", __func__);
+	no_printk("%s:\n", __func__);
 	// Save Rawdata to CSV file
 	if (nvt_save_rawdata_to_csv(xdata, X_Channel, Y_Channel, FW_RAWDATA_CSV_FILE, 0) < 0) {
 		NVT_ERR("save rawdata to CSV file failed\n");
@@ -598,7 +602,7 @@ static int32_t nvt_read_CC(int32_t *xdata)
 	}
 #endif /* #if TOUCH_KEY_NUM > 0 */
 
-	pr_info("%s:\n", __func__);
+	no_printk("%s:\n", __func__);
 	// Save Rawdata to CSV file
 	if (nvt_save_rawdata_to_csv(xdata, X_Channel, Y_Channel, FW_CC_CSV_FILE, 0) < 0) {
 		NVT_ERR("save rawdata to CSV file failed\n");
@@ -649,7 +653,7 @@ static int32_t nvt_read_fw_noise(int32_t *xdata)
 	frame_num = PS_Config_Diff_Test_Frame / 10;
 	if (frame_num <= 0)
 		frame_num = 1;
-	pr_info("%s: frame_num=%d\n", __func__, frame_num);
+	no_printk("%s: frame_num=%d\n", __func__, frame_num);
 	nvt_enable_noise_collect(frame_num);
 	// need wait PS_Config_Diff_Test_Frame * 8.3ms
 	msleep(frame_num * 83);
@@ -687,7 +691,7 @@ static int32_t nvt_read_fw_noise(int32_t *xdata)
 	//---Leave Test Mode---
 	nvt_change_mode(NORMAL_MODE);
 
-	pr_info("%s:RawData_Diff_Max:\n", __func__);
+	no_printk("%s:RawData_Diff_Max:\n", __func__);
 	// Save Rawdata to CSV file
 	if (nvt_save_rawdata_to_csv(RawData_Diff_Max, X_Channel, Y_Channel, NOISE_TEST_CSV_FILE, 0) < 0) {
 		NVT_ERR("save rawdata to CSV file failed\n");
@@ -699,7 +703,7 @@ static int32_t nvt_read_fw_noise(int32_t *xdata)
 #else
 	rawdata_diff_min_offset = Y_Channel * X_Channel * 7 + Y_Channel * 2;
 #endif /* #if TOUCH_KEY_NUM > 0 */
-	pr_info("%s:RawData_Diff_Min:\n", __func__);
+	no_printk("%s:RawData_Diff_Min:\n", __func__);
 	// Save Rawdata to CSV file
 	if (nvt_save_rawdata_to_csv(RawData_Diff_Min, X_Channel, Y_Channel, NOISE_TEST_CSV_FILE, rawdata_diff_min_offset) < 0) {
 		NVT_ERR("save rawdata to CSV file failed\n");
@@ -828,7 +832,7 @@ static int32_t nvt_read_fw_open(int32_t *xdata)
 	nvt_change_mode(NORMAL_MODE);
 
 
-	pr_info("%s:RawData_Open\n", __func__);
+	no_printk("%s:RawData_Open\n", __func__);
 	// Save RawData to CSV file
 	if (nvt_save_rawdata_to_csv(xdata, X_Channel, Y_Channel, OPEN_TEST_CSV_FILE, 0) < 0) {
 		NVT_ERR("save rawdata to CSV file failed\n");
@@ -924,7 +928,7 @@ static int32_t nvt_read_fw_short(int32_t *xdata)
 	//---Leave Test Mode---
 	nvt_change_mode(NORMAL_MODE);
 
-	pr_info("%s:RawData_Short\n", __func__);
+	no_printk("%s:RawData_Short\n", __func__);
 	// Save Rawdata to CSV file
 	if (nvt_save_rawdata_to_csv(xdata, X_Channel, Y_Channel, SHORT_TEST_CSV_FILE, 0) < 0) {
 		NVT_ERR("save rawdata to CSV file failed\n");
@@ -1268,8 +1272,10 @@ int lct_nvt_tp_selftest_callback(unsigned char cmd)
 	nvt_esd_check_enable(false);
 #endif /* #if NVT_TOUCH_ESD_PROTECT */
 
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
 	//---Download MP FW---
 	nvt_update_firmware(ts->mp_update_firmware_name);
+#endif
 
 	if (nvt_get_fw_info()) {
 		mutex_unlock(&ts->lock);
@@ -1289,8 +1295,9 @@ int lct_nvt_tp_selftest_callback(unsigned char cmd)
 		 * Ex. nvt_pid = 500A
 		 *     mpcriteria = "novatek-mp-criteria-500A"
 		 */
-		snprintf(mpcriteria, PAGE_SIZE, "novatek-mp-criteria-%04X", ts->nvt_pid);
+		snprintf(mpcriteria, sizeof(mpcriteria), "novatek-mp-criteria-%04X", ts->nvt_pid);
 
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
 		if (nvt_mp_parse_dt(np, mpcriteria)) {
 			//---Download Normal FW---
 			nvt_update_firmware(ts->boot_update_firmware_name);
@@ -1298,6 +1305,7 @@ int lct_nvt_tp_selftest_callback(unsigned char cmd)
 			NVT_ERR("mp parse device tree failed!\n");
 			return -EINVAL;
 		}
+#endif
 	} else {
 		NVT_LOG("Not found novatek,mp-support-dt, use default setting\n");
 		//---Print Test Criteria---
@@ -1395,10 +1403,12 @@ int lct_nvt_tp_selftest_callback(unsigned char cmd)
 											PS_Config_Lmt_Open_Rawdata_P, PS_Config_Lmt_Open_Rawdata_N);
 	}
 
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
 	//---Download Normal FW---
 	nvt_update_firmware(ts->boot_update_firmware_name);
 
 	mutex_unlock(&ts->lock);
+#endif
 
 	//Short Test Result
 	print_selftest_result_on_log(TestResult_Short, RecordResult_Short, RawData_Short, X_Channel, Y_Channel);
@@ -1468,8 +1478,10 @@ static int32_t nvt_selftest_open(struct inode *inode, struct file *file)
 	nvt_esd_check_enable(false);
 #endif /* #if NVT_TOUCH_ESD_PROTECT */
 
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
 	//---Download MP FW---
 	nvt_update_firmware(ts->mp_update_firmware_name);
+#endif
 
 	if (nvt_get_fw_info()) {
 		mutex_unlock(&ts->lock);
@@ -1487,8 +1499,9 @@ static int32_t nvt_selftest_open(struct inode *inode, struct file *file)
 		 * Ex. nvt_pid = 500A
 		 *     mpcriteria = "novatek-mp-criteria-500A"
 		 */
-		snprintf(mpcriteria, PAGE_SIZE, "novatek-mp-criteria-%04X", ts->nvt_pid);
+		snprintf(mpcriteria, sizeof(mpcriteria), "novatek-mp-criteria-%04X", ts->nvt_pid);
 
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
 		if (nvt_mp_parse_dt(np, mpcriteria)) {
 			//---Download Normal FW---
 			nvt_update_firmware(ts->boot_update_firmware_name);
@@ -1496,6 +1509,7 @@ static int32_t nvt_selftest_open(struct inode *inode, struct file *file)
 			NVT_ERR("mp parse device tree failed!\n");
 			return -EINVAL;
 		}
+#endif
 	} else {
 		NVT_LOG("Not found novatek,mp-support-dt, use default setting\n");
 		//---Print Test Criteria---
@@ -1593,6 +1607,7 @@ static int32_t nvt_selftest_open(struct inode *inode, struct file *file)
 											PS_Config_Lmt_Open_Rawdata_P, PS_Config_Lmt_Open_Rawdata_N);
 	}
 
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
 	//---Download Normal FW---
 	nvt_update_firmware(ts->boot_update_firmware_name);
 
@@ -1601,7 +1616,7 @@ static int32_t nvt_selftest_open(struct inode *inode, struct file *file)
 	NVT_LOG("--\n");
 
 	nvt_mp_test_result_printed = 0;
-
+#endif
 	return seq_open(file, &nvt_selftest_seq_ops);
 }
 
@@ -1644,11 +1659,6 @@ int32_t nvt_mp_parse_ain(struct device_node *np, const char *name, uint8_t *arra
 		for (i = 0; i < len; i++)
 			array[i] = tmp[i];
 
-#if NVT_DEBUG
-		pr_info("[NVT-ts] %s = ", name);
-		nvt_print_result_log_in_one_line(array, len);
-		pr_info("\n");
-#endif
 	}
 
 	return 0;
@@ -1670,9 +1680,6 @@ int32_t nvt_mp_parse_u32(struct device_node *np, const char *name, int32_t *para
 		NVT_ERR("error reading %s. ret=%d\n", name, ret);
 		return -1;
 	} else {
-#if NVT_DEBUG
-		NVT_LOG("%s=%d\n", name, *para);
-#endif
 	}
 
 	return 0;
@@ -1690,9 +1697,6 @@ int32_t nvt_mp_parse_array(struct device_node *np, const char *name, int32_t *ar
 {
 	struct property *data;
 	int32_t len, ret;
-#if NVT_DEBUG
-	int32_t j = 0;
-#endif
 
 	data = of_find_property(np, name, &len);
 	len /= sizeof(u32);
@@ -1707,16 +1711,9 @@ int32_t nvt_mp_parse_array(struct device_node *np, const char *name, int32_t *ar
 			return -1;
 		}
 
-#if NVT_DEBUG
-		NVT_LOG("%s =\n", name);
-		for (j = 0; j < Y_Channel; j++) {
-			nvt_print_data_log_in_one_line(array + j * X_Channel, X_Channel);
-			pr_info("\n");
-		}
 #if TOUCH_KEY_NUM > 0
 		nvt_print_data_log_in_one_line(array + Y_Channel * X_Channel, Key_Channel);
-		pr_info("\n");
-#endif
+		no_printk("\n");
 #endif
 	}
 

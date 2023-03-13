@@ -543,3 +543,10 @@ struct test_funcs test_func_ft8006sp = {
     .key_num_total = 0,
     .start_test = start_test_ft8006sp,
 };
+
+struct test_funcs test_func_ft8006sp_ab = {
+    .ctype = {0x19},
+    .hwtype = IC_HW_INCELL,
+    .key_num_total = 0,
+    .start_test = start_test_ft8006sp,
+};

@@ -1,9 +1,10 @@
 # Linux driver folder
+ccflags-y += -fPIC
 ccflags-y += -I$(srctree)/drivers/input/touchscreen/mediatek/hxchipset/
 ccflags-y += -I$(srctree)/drivers/input/touchscreen/mediatek/
-#ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat/
-#ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat/$(MTK_PLATFORM)/include/
-#ccflags-y += -I$(srctree)/drivers/misc/mediatek/i2c/$(MTK_PLATFORM)/
+ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat/
+ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat/$(MTK_PLATFORM)/include/
+ccflags-y += -I$(srctree)/drivers/misc/mediatek/i2c/$(MTK_PLATFORM)/
 
 # Makefile for the Himax touchscreen drivers.
 
@@ -57,91 +58,91 @@ ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83102)),)
   endif
 endif
 
-ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83103)),)
-  ccflags-y += -D__HIMAX_HX83103_MOD__
-  ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-m += himax_ic_HX83103.o
-  endif
-  ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-y += himax_ic_HX83103.o
-  endif
-endif
+#ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83103)),)
+ # ccflags-y += -D__HIMAX_HX83103_MOD__
+  #ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-m += himax_ic_HX83103.o
+ # endif
+  #ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-y += himax_ic_HX83103.o
+ # endif
+#endif
 
-ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83106)),)
-  ccflags-y += -D__HIMAX_HX83106_MOD__
-  ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-m += himax_ic_HX83106.o
-  endif
-  ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-y += himax_ic_HX83106.o
-  endif
-endif
+#ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83106)),)
+ # ccflags-y += -D__HIMAX_HX83106_MOD__
+  #ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-m += himax_ic_HX83106.o
+ # endif
+  #ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-y += himax_ic_HX83106.o
+ # endif
+#endif
 
-ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83111)),)
-  ccflags-y += -D__HIMAX_HX83111_MOD__
-  ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-m += himax_ic_HX83111.o
-  endif
-  ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-y += himax_ic_HX83111.o
-  endif
-endif
+#ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83111)),)
+ # ccflags-y += -D__HIMAX_HX83111_MOD__
+  #ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-m += himax_ic_HX83111.o
+ # endif
+  #ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-y += himax_ic_HX83111.o
+ # endif
+#endif
 
-ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83112)),)
-  ccflags-y += -D__HIMAX_HX83112_MOD__
-  ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-m += himax_ic_HX83112.o
-  endif
-  ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-y += himax_ic_HX83112.o
-  endif
-endif
+#ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83112)),)
+ # ccflags-y += -D__HIMAX_HX83112_MOD__
+  #ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-m += himax_ic_HX83112.o
+ # endif
+  #ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-y += himax_ic_HX83112.o
+ # endif
+#endif
 
-ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83113)),)
-  ccflags-y += -D__HIMAX_HX83113_MOD__
-  ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-m += himax_ic_HX83113.o
-  endif
-  ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-y += himax_ic_HX83113.o
-  endif
-endif
+#ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83113)),)
+ # ccflags-y += -D__HIMAX_HX83113_MOD__
+  #ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-m += himax_ic_HX83113.o
+ # endif
+  #ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-y += himax_ic_HX83113.o
+ # endif
+#endif
 
-ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83192)),)
-  ccflags-y += -D__HIMAX_HX83192_MOD__
-  ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-m += himax_ic_HX83192.o
-  endif
-  ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-y += himax_ic_HX83192.o
-  endif
-endif
+#ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83192)),)
+ # ccflags-y += -D__HIMAX_HX83192_MOD__
+  #ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-m += himax_ic_HX83192.o
+ # endif
+  #ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-y += himax_ic_HX83192.o
+ # endif
+#endif
 
-ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83191)),)
-  ccflags-y += -D__HIMAX_HX83191_MOD__
-  ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-m += himax_ic_HX83191.o
-  endif
-  ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
-	obj-y += himax_ic_HX83191.o
-  endif
-endif
+#ifneq ($(filter y m, $(CONFIG_TOUCHSCREEN_HIMAX_IC_HX83191)),)
+ # ccflags-y += -D__HIMAX_HX83191_MOD__
+  #ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-m += himax_ic_HX83191.o
+ # endif
+  #ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
+#	obj-y += himax_ic_HX83191.o
+ # endif
+#endif
 
 ifneq ($(filter m, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
   ccflags-y += -D__HIMAX_MOD__
 	himax_mmi-objs += himax_common.o
 	himax_mmi-objs += himax_platform.o
-ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_EMBEDDED_FIRMWARE)),)
-	himax_mmi-objs += Himax_firmware.o
-endif
+#ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_EMBEDDED_FIRMWARE)),)
+#	himax_mmi-objs += Himax_firmware.o
+#endif
 	obj-m += himax_mmi.o
 endif
 ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_COMMON)),)
 	himax_mmi-objs += himax_common.o
 	himax_mmi-objs += himax_platform.o
-ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_EMBEDDED_FIRMWARE)),)
-	himax_mmi-objs += Himax_firmware.o
-endif
+#ifneq ($(filter y, $(CONFIG_TOUCHSCREEN_HIMAX_EMBEDDED_FIRMWARE)),)
+#	himax_mmi-objs += Himax_firmware.o
+#endif
 	obj-y += himax_mmi.o
 endif
 

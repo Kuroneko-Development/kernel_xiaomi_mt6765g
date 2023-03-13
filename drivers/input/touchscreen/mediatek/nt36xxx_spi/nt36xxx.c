@@ -777,6 +777,11 @@ info_retry:
 		sprintf(tp_info_buf, "[Vendor]shenchao,[FW]0x%02x,[IC]nt36525b\n", ts->fw_ver);
 		update_lct_tp_info(tp_info_buf, NULL);
 		break;
+
+	case TP_VENDOR_XNL:
+                sprintf(tp_info_buf, "[Vendor]XINLI,[FW]0x%02x,[IC]nt36525b\n", ts->fw_ver);
+                update_lct_tp_info(tp_info_buf, NULL);
+                break;
 	}
 #else
 	sprintf(tp_info_buf, "[Vendor]unknow,[FW]0x%02x,[IC]nt36525b\n", ts->fw_ver);
@@ -1034,59 +1039,44 @@ void nvt_ts_wakeup_gesture_report(uint8_t gesture_id, uint8_t *data)
 		return;
 	}
 
-	NVT_LOG("gesture_id = %d\n", gesture_id);
-
 	switch (gesture_id) {
 		case GESTURE_WORD_C:
-			NVT_LOG("Gesture : Word-C.\n");
 			keycode = gesture_key_array[0];
 			break;
 		case GESTURE_WORD_W:
-			NVT_LOG("Gesture : Word-W.\n");
 			keycode = gesture_key_array[1];
 			break;
 		case GESTURE_WORD_V:
-			NVT_LOG("Gesture : Word-V.\n");
 			keycode = gesture_key_array[2];
 			break;
 		case GESTURE_DOUBLE_CLICK:
-			NVT_LOG("Gesture : Double Click.\n");
 			keycode = gesture_key_array[3];
 			break;
 		case GESTURE_WORD_Z:
-			NVT_LOG("Gesture : Word-Z.\n");
 			keycode = gesture_key_array[4];
 			break;
 		case GESTURE_WORD_M:
-			NVT_LOG("Gesture : Word-M.\n");
 			keycode = gesture_key_array[5];
 			break;
 		case GESTURE_WORD_O:
-			NVT_LOG("Gesture : Word-O.\n");
 			keycode = gesture_key_array[6];
 			break;
 		case GESTURE_WORD_e:
-			NVT_LOG("Gesture : Word-e.\n");
 			keycode = gesture_key_array[7];
 			break;
 		case GESTURE_WORD_S:
-			NVT_LOG("Gesture : Word-S.\n");
 			keycode = gesture_key_array[8];
 			break;
 		case GESTURE_SLIDE_UP:
-			NVT_LOG("Gesture : Slide UP.\n");
 			keycode = gesture_key_array[9];
 			break;
 		case GESTURE_SLIDE_DOWN:
-			NVT_LOG("Gesture : Slide DOWN.\n");
 			keycode = gesture_key_array[10];
 			break;
 		case GESTURE_SLIDE_LEFT:
-			NVT_LOG("Gesture : Slide LEFT.\n");
 			keycode = gesture_key_array[11];
 			break;
 		case GESTURE_SLIDE_RIGHT:
-			NVT_LOG("Gesture : Slide RIGHT.\n");
 			keycode = gesture_key_array[12];
 			break;
 		default:
@@ -1246,8 +1236,10 @@ static void nvt_esd_check_func(struct work_struct *work)
 	if ((timer > NVT_TOUCH_ESD_CHECK_PERIOD) && esd_check) {
 		mutex_lock(&ts->lock);
 		NVT_ERR("do ESD recovery, timer = %d, retry = %d\n", timer, esd_retry);
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
 		/* do esd recovery, reload fw */
 		nvt_update_firmware(ts->boot_update_firmware_name);
+#endif
 		mutex_unlock(&ts->lock);
 		/* update interrupt timer */
 		irq_timer = jiffies;
@@ -1344,7 +1336,9 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
    /* ESD protect by WDT */
    if (nvt_wdt_fw_recovery(point_data)) {
        NVT_ERR("Recover for fw reset, %02X\n", point_data[1]);
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
        nvt_update_firmware(ts->boot_update_firmware_name);
+#endif
        goto XFER_ERROR;
    }
 #endif /* #if NVT_TOUCH_WDT_RECOVERY */
@@ -2130,6 +2124,10 @@ static int32_t nvt_ts_probe(struct spi_device *client)
 		memcpy(ts->mp_update_firmware_name, MP_UPDATE_EBBG_FIRMWARE_NAME, sizeof(MP_UPDATE_EBBG_FIRMWARE_NAME));
 		break;
 
+	case TP_VENDOR_XNL:
+                memcpy(ts->boot_update_firmware_name, BOOT_UPDATE_XNL_FIRMWARE_NAME, sizeof(BOOT_UPDATE_XNL_FIRMWARE_NAME));
+                break; 
+
 	default:
 		goto err_vendor_check;
 	}
@@ -2199,7 +2197,6 @@ static int32_t nvt_ts_probe(struct spi_device *client)
 
 	mutex_init(&ts->lock);
 	mutex_init(&ts->xbuf_lock);
-	mutex_init(&ts->reg_lock);
 
 	//---eng reset before TP_RESX high
 	nvt_eng_reset();
@@ -2430,32 +2427,6 @@ static int32_t nvt_ts_probe(struct spi_device *client)
 	}
 #endif
 
-	/* 2019.12.16 longcheer taocheng add (xiaomi game mode) start */
-	/*function description*/
-	if (ts->nvt_tp_class == NULL) {
-#ifdef CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE
-		ts->nvt_tp_class = get_xiaomi_touch_class();
-#endif
-		if (ts->nvt_tp_class) {
-			ts->nvt_touch_dev = device_create(ts->nvt_tp_class, NULL, 0x38, ts, "tp_dev");
-			if (IS_ERR(ts->nvt_touch_dev)) {
-				NVT_ERR("Failed to create device !\n");
-				goto err_class_create;
-			}
-			dev_set_drvdata(ts->nvt_touch_dev, ts);
-#ifdef CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE
-			memset(&xiaomi_touch_interfaces, 0x00, sizeof(struct xiaomi_touch_interface));
-			xiaomi_touch_interfaces.getModeValue = nvt_get_mode_value;
-			xiaomi_touch_interfaces.setModeValue = nvt_set_cur_value;
-			xiaomi_touch_interfaces.resetMode = nvt_reset_mode;
-			xiaomi_touch_interfaces.getModeAll = nvt_get_mode_all;
-			nvt_init_touchmode_data();
-			xiaomitouch_register_modedata(&xiaomi_touch_interfaces);
-#endif
-		}
-	}
-	/* 2019.12.16 longcheer taocheng add (xiaomi game mode) end */
-
 	bTouchIsAwake = 1;
 	NVT_LOG("end\n");
 
@@ -2481,11 +2452,6 @@ static int32_t nvt_ts_probe(struct spi_device *client)
 	}
 
 	return 0;
-
-//2019.12.16 longcheer taocheng add (xiaomi game mode)
-err_class_create:
-	class_destroy(ts->nvt_tp_class);
-	ts->nvt_tp_class = NULL;
 
 #if defined(CONFIG_FB)
 err_create_nvt_ts_workqueue_failed:
@@ -2874,11 +2840,13 @@ static int32_t nvt_ts_resume(struct device *dev)
 #if NVT_TOUCH_SUPPORT_HW_RST
 	gpio_set_value(ts->reset_gpio, 1);
 #endif
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
 	if (nvt_update_firmware(ts->boot_update_firmware_name)) {
 		NVT_ERR("download firmware failed, ignore check fw state\n");
 	} else {
 		nvt_check_fw_reset_state(RESET_STATE_REK);
 	}
+#endif
 
 #if WAKEUP_GESTURE
 	if (!ts->is_gesture_mode) {
@@ -3136,6 +3104,9 @@ static int32_t __init nvt_driver_init(void)
 		} else if (strcmp(mtkfb_lcm_name,"nt36525b_vdo_hdp_panda_shengchao_drv") == 0) {
 			touch_vendor_id = TP_VENDOR_EBBG;
 			NVT_LOG("TP info: [Vendor]SHENCHAO [IC]nt36525b\n");
+		} else if (strcmp(mtkfb_lcm_name,"nt36525b_vdo_hdp_boe_xinli_drv") == 0) {
+			touch_vendor_id = TP_VENDOR_XNL;
+			NVT_LOG("TP info: [Vendor]XINLI [IC]nt36525b\n");
 		} else {
 			touch_vendor_id = TP_VENDOR_UNKNOW;
 			NVT_ERR("Unknow Touch\n");

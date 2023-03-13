@@ -47,10 +47,7 @@
 #include "../lct_tp_gesture.h"
 #include "../lct_tp_grip_area.h"
 #include "../lct_tp_work.h"
-#ifdef CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE
-#include "../xiaomi/xiaomi_touch.h"
-#endif
-#define NVT_DEBUG 1
+#define NVT_DEBUG 0
 
 //---GPIO number---
 #define NVTTOUCH_RST_PIN 174
@@ -64,14 +61,10 @@
 
 
 //---SPI driver info.---
-#define NVT_SPI_NAME "NVT-ts"
+#define NVT_SPI_NAME "NVT-ts-modified"
 
-#if NVT_DEBUG
-#define NVT_LOG(fmt, args...)    pr_err("[%s] %s %d: " fmt, NVT_SPI_NAME, __func__, __LINE__, ##args)
-#else
-#define NVT_LOG(fmt, args...)    pr_info("[%s] %s %d: " fmt, NVT_SPI_NAME, __func__, __LINE__, ##args)
-#endif
-#define NVT_ERR(fmt, args...)    pr_err("[%s] %s %d: " fmt, NVT_SPI_NAME, __func__, __LINE__, ##args)
+#define NVT_LOG(fmt, args...)
+#define NVT_ERR(fmt, args...)
 
 //---Input device info.---
 #define NVT_TS_NAME "NVTCapacitiveTouchScreen"
@@ -85,21 +78,25 @@
 #if TOUCH_KEY_NUM > 0
 extern const uint16_t touch_key_array[TOUCH_KEY_NUM];
 #endif
-#define TOUCH_FORCE_NUM 1000
+#define TOUCH_FORCE_NUM 1
 
 /* Enable only when module have tp reset pin and connected to host */
 #define NVT_TOUCH_SUPPORT_HW_RST 0
 
 //---Customerized func.---
-#define NVT_TOUCH_PROC 1
-#define NVT_TOUCH_EXT_PROC 1
-#define NVT_TOUCH_MP 1
-#define MT_PROTOCOL_B 1
+#define NVT_TOUCH_PROC 0
+#define NVT_TOUCH_EXT_PROC 0
+#define NVT_TOUCH_MP 0
+#define MT_PROTOCOL_B 0
 #define WAKEUP_GESTURE 1
 #if WAKEUP_GESTURE
 extern const uint16_t gesture_key_array[];
 #endif
+#ifdef CONFIG_TOUCHSCREEN_NT36XXX_FW_UPDATE
 #define BOOT_UPDATE_FIRMWARE 1
+#else
+#define BOOT_UPDATE_FIRMWARE 0
+#endif
 #define FIRMWARE_NAME_LEN    256
 #define BOOT_UPDATE_FIRMWARE_NAME         "novatek_ts_fw.bin"
 #define BOOT_UPDATE_TIANMA_FIRMWARE_NAME  "novatek_ts_tianma_fw.bin"
@@ -109,12 +106,13 @@ extern const uint16_t gesture_key_array[];
 #define MP_UPDATE_FIRMWARE_NAME           "novatek_ts_mp.bin"
 #define MP_UPDATE_TIANMA_FIRMWARE_NAME    "novatek_ts_tianma_mp.bin"
 #define MP_UPDATE_EBBG_FIRMWARE_NAME      "novatek_ts_ebbg_mp.bin"
-#define MP_UPDATE_DJN_FIRMWARE_NAME		  "novatek_ts_djn_mp.bin"
-#define MP_UPDATE_HLT_FIRMWARE_NAME		  "novatek_ts_hlt_mp.bin"
+#define MP_UPDATE_DJN_FIRMWARE_NAME	  "novatek_ts_djn_mp.bin"
+#define MP_UPDATE_HLT_FIRMWARE_NAME	  "novatek_ts_hlt_mp.bin"
+#define BOOT_UPDATE_XNL_FIRMWARE_NAME     "novatek_ts_djn_fw.bin"
 
 //---ESD Protect.---
-#define NVT_TOUCH_ESD_PROTECT 0
-#define NVT_TOUCH_ESD_CHECK_PERIOD 1500	/* ms */
+#define NVT_TOUCH_ESD_PROTECT 1
+#define NVT_TOUCH_ESD_CHECK_PERIOD 700	/* ms */
 #define NVT_TOUCH_WDT_RECOVERY 1
 
 //enable 'check touch vendor' feature
@@ -145,16 +143,9 @@ typedef struct touchscreen_usb_plugin_data {
 #define TP_VENDOR_TIANMA    0x01
 #define TP_VENDOR_HUAXING   0x02
 #define TP_VENDOR_EBBG      0x03
-#define TP_VENDOR_DJN      0x04
-#define TP_VENDOR_HLT      0x05
-
-/* 2019.12.16 longcheer taocheng add (xiaomi game mode) start */
-#define NVT_REG_MONITOR_MODE                0x7000
-#define NVT_REG_THDIFF                      0x7100
-#define NVT_REG_SENSIVITY                   0x7200
-#define NVT_REG_EDGE_FILTER_LEVEL           0xBA00
-#define NVT_REG_EDGE_FILTER_ORIENTATION     0xBC00
-/* 2019.12.16 longcheer taocheng add (xiaomi game mode) end */
+#define TP_VENDOR_DJN	    0x04
+#define TP_VENDOR_HLT	    0x05
+#define TP_VENDOR_XNL	    0x06
 
 //new qcom platform use
 //#define _MSM_DRM_NOTIFY_H_
@@ -220,16 +211,6 @@ struct nvt_ts_data {
     struct mtk_chip_config spi_ctrl;
 #endif
 
-/*2019.12.16 longcheer taocheng add (xiaomi game mode) start*/
-#ifdef CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE
-	u8 palm_sensor_switch;
-	bool palm_sensor_changed;
-	bool gamemode_enabled;
-#endif
-	struct mutex reg_lock;
-	struct device *nvt_touch_dev;
-	struct class *nvt_tp_class;
-/*2019.12.16 longcheer taocheng add (xiaomi game mode) end*/
 };
 
 #if NVT_TOUCH_PROC
