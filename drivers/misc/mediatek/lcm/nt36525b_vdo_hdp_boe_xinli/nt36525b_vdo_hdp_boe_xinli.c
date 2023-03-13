@@ -315,6 +315,8 @@ static void lcm_get_params(struct LCM_PARAMS *params)
 	params->dsi.lcm_esd_check_table[0].cmd = 0x0A;
 	params->dsi.lcm_esd_check_table[0].count = 1;
 	params->dsi.lcm_esd_check_table[0].para_list[0] = 0x9C;
+ 	params->min_refresh_rate = 66;
+ 	params->max_refresh_rate = 66;
 
 }
 
@@ -372,7 +374,6 @@ static void lcm_init(void)
 	disp_dts_gpio_select_state(DTS_GPIO_STATE_LCM_RST_OUT1);
 	
 	MDELAY(4);
-
 	push_table(init_setting,
 		sizeof(init_setting) / sizeof(struct LCM_setting_table), 1);
 }
@@ -586,8 +587,8 @@ static void *lcm_switch_mode(int mode)
 }
 
 
-struct LCM_DRIVER nt36525b_vdo_hdp_boe_helitai_lcm_drv = {
-	.name = "nt36525b_vdo_hdp_boe_helitai_drv",
+struct LCM_DRIVER nt36525b_vdo_hdp_boe_xinli_lcm_drv = {
+	.name = "nt36525b_vdo_hdp_boe_xinli_drv",
 	.set_util_funcs = lcm_set_util_funcs,
 	.get_params = lcm_get_params,
 	.init = lcm_init,
