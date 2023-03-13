@@ -61,10 +61,10 @@ static int mt_gpu_bw_ap2sspm(unsigned int eCMD, int type)
 		dump_stack();
 
 		if (apDebug < 0)
-			gpufreq_pr_debug("%s: AP side err (%d)\n",
+			gpufreq_no_printk("%s: AP side err (%d)\n",
 				__func__, apDebug);
 		if (md32Ret < 0)
-			gpufreq_pr_debug("%s: SSPM err (%d)\n",
+			gpufreq_no_printk("%s: SSPM err (%d)\n",
 				__func__, md32Ret);
 
 		md32Ret = -1;

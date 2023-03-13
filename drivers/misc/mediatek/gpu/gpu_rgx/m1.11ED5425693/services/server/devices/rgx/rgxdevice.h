@@ -81,7 +81,7 @@ typedef struct {
 #define RGX_GPU_DVFS_TABLE_SIZE                      32
 #define RGX_GPU_DVFS_FIRST_CALIBRATION_TIME_US       25000     /* Time required to calibrate a clock frequency the first time */
 #define RGX_GPU_DVFS_TRANSITION_CALIBRATION_TIME_US  150000    /* Time required for a recalibration after a DVFS transition */
-#define RGX_GPU_DVFS_PERIODIC_CALIBRATION_TIME_US    10000000  /* Time before the next periodic calibration and correlation */
+#define RGX_GPU_DVFS_PERIODIC_CALIBRATION_TIME_US    1000000  /* Time before the next periodic calibration and correlation */
 
 typedef struct _GPU_FREQ_TRACKING_DATA_
 {
@@ -213,11 +213,11 @@ typedef struct _PVRSRV_DEVICE_FEATURE_CONFIG_
    MTS can have is 255, therefore 512 (LOG2 = 9) is large enough to account for
    all corner cases
 */
-#define RETURN_DATA_ARRAY_SIZE_LOG2 (9)
+#define RETURN_DATA_ARRAY_SIZE_LOG2 (6)
 #define RETURN_DATA_ARRAY_SIZE      ((1UL) << RETURN_DATA_ARRAY_SIZE_LOG2)
 #define RETURN_DATA_ARRAY_WRAP_MASK (RETURN_DATA_ARRAY_SIZE - 1)
 
-#define WORKLOAD_HASH_SIZE_LOG2		6
+#define WORKLOAD_HASH_SIZE_LOG2		5
 #define WORKLOAD_HASH_SIZE 			((1UL) << WORKLOAD_HASH_SIZE_LOG2)
 #define WORKLOAD_HASH_WRAP_MASK		(WORKLOAD_HASH_SIZE - 1)
 

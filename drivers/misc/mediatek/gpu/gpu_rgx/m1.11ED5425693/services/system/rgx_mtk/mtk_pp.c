@@ -217,7 +217,7 @@ static MTK_PROC_PRINT_DATA *MTKPP_AllocStruct(int type)
 
 	data = vmalloc(sizeof(MTK_PROC_PRINT_DATA));
 	if (data == NULL) {
-		pr_debug("[PVR_K ] %s: vmalloc fail", __func__);
+		no_printk("[PVR_K ] %s: vmalloc fail", __func__);
 		goto err_out;
 	}
 
@@ -231,7 +231,7 @@ static MTK_PROC_PRINT_DATA *MTKPP_AllocStruct(int type)
 		data->pfn_print = MTKPP_PrintRingBuffer;
 		break;
 	default:
-		pr_debug("[PVR_K ] %s: unknown flags: %d", __func__, type);
+		no_printk("[PVR_K ] %s: unknown flags: %d", __func__, type);
 		goto err_out2;
 	}
 
@@ -442,7 +442,7 @@ void MTKPP_Init(void)
 
 	for (i = 0; i < MTKPP_ID_SIZE; ++i) {
 		if (i != MTKPP_TABLE[i].uid) {
-			pr_debug("[PVR_K ] %s: index(%d) != tabel_uid(%d)",
+			no_printk("[PVR_K ] %s: index(%d) != tabel_uid(%d)",
 					__func__, i, MTKPP_TABLE[i].uid);
 			goto err_out;
 		}
@@ -450,7 +450,7 @@ void MTKPP_Init(void)
 		g_MTKPPdata[i] = MTKPP_AllocStruct(MTKPP_TABLE[i].type);
 
 		if (g_MTKPPdata[i] == NULL) {
-			pr_debug("[PVR_K ] %s: alloc struct fail: flags = %d",
+			no_printk("[PVR_K ] %s: alloc struct fail: flags = %d",
 					__func__, MTKPP_TABLE[i].type);
 			goto err_out;
 		}
@@ -500,10 +500,10 @@ MTK_PROC_PRINT_DATA *MTKPP_GetData(MTKPP_ID id)
 void MTKPP_LOGTIME(MTKPP_ID id, const char *str)
 {
 	if (g_init_done) {
-		pr_debug("[PVR_K ] %s", str);
+		no_printk("[PVR_K ] %s", str);
 		MTKPP_PrintQueueBuffer2(g_MTKPPdata[id], "%s", str);
 	} else
-		pr_debug("[PVR_K ] [not init] %s", str);
+		no_printk("[PVR_K ] [not init] %s", str);
 }
 
 void MTKPP_TriggerAEE(int bug_on)

@@ -179,21 +179,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			__builtin_assume(expr); \
 		} while (0)
 #elif defined(_MSC_VER)
-	#define assume(expr) \
-		do { \
-			assert(expr); \
-			__assume(expr); \
-		} while (0)
+	#define assume(expr)
 #elif defined(LINUX) && defined(__KERNEL__)
 	#define assume(expr) ((void)(expr))
 #elif GCC_VERSION_AT_LEAST(4, 5) || has_clang_builtin(__builtin_unreachable)
-	#define assume(expr) \
-		do { \
-			if (unlikely(!(expr))) \
-				unreachable("Assumption isn't true: " # expr); \
-		} while (0)
+	#define assume(expr)
 #else
-	#define assume(expr) assert(expr)
+	#define assume(expr)
 #endif
 
 /*! Macro to calculate the n-byte aligned value from that supplied rounding up.

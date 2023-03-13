@@ -42,7 +42,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define TRACE_SYSTEM rogue
 
 #if !defined(ROGUE_TRACE_EVENTS_H) || defined(TRACE_HEADER_MULTI_READ)
-#define ROGUE_TRACE_EVENTS_H
+//#define ROGUE_TRACE_EVENTS_H
 
 #include <linux/version.h>
 #include <linux/types.h>

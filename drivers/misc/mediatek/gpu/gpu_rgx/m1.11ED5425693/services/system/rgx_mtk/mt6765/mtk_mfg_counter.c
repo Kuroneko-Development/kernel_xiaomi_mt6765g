@@ -174,7 +174,7 @@ static void *_mtk_of_ioremap(const char *node_name)
 	if (node)
 		return of_iomap(node, 0);
 
-	pr_debug("cannot find [%s] of_node, please fix me\n", node_name);
+	no_printk("cannot find [%s] of_node, please fix me\n", node_name);
 	return NULL;
 }
 

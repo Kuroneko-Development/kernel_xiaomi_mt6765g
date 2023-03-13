@@ -75,15 +75,12 @@ extern "C" {
 #define DBGPRIV_LAST      0x200UL  /*!< Always set to highest mask value. Privately used by pvr_debug. */
 
 #if !defined(PVRSRV_NEED_PVR_ASSERT) && defined(DEBUG)
-#define PVRSRV_NEED_PVR_ASSERT
 #endif
 
 #if defined(PVRSRV_NEED_PVR_ASSERT) && !defined(PVRSRV_NEED_PVR_DPF)
-#define PVRSRV_NEED_PVR_DPF
 #endif
 
 #if !defined(PVRSRV_NEED_PVR_TRACE) && (defined(DEBUG) || defined(TIMING))
-#define PVRSRV_NEED_PVR_TRACE
 #endif
 
 #if !defined(DOXYGEN)
@@ -110,36 +107,14 @@ NB No doxygen comments provided as this function does not require porting
 #else /* ! __KLOCWORKS__ */
 
 #if defined(_WIN32)
-#define PVR_ASSERT(expr) do										\
-	{															\
-		MSC_SUPPRESS_4127										\
-		if (unlikely(!(expr)))								\
-		{														\
-			PVRSRVDebugPrintf(DBGPRIV_FATAL, __FILE__, __LINE__,\
-					  "*** Debug assertion failed!");			\
-			__debugbreak();										\
-		}														\
-	MSC_SUPPRESS_4127											\
-	} while (0)
-
+#define PVR_ASSERT(expr)
 #else
 
 #if defined(LINUX) && defined(__KERNEL__)
 #include <linux/kernel.h>
 #include <linux/bug.h>
 
-/* In Linux kernel mode, use WARN_ON() directly. This produces the
-   correct filename and line number in the warning message. */
-#define PVR_ASSERT(EXPR) do											\
-	{																\
-		if (unlikely(!(EXPR)))										\
-		{															\
-			PVRSRVDebugPrintf(DBGPRIV_FATAL, __FILE__, __LINE__,	\
-							  "Debug assertion failed!");			\
-			WARN_ON(1);												\
-		}															\
-	} while (0)
-
+#define PVR_ASSERT(EXPR) do
 #else /* defined(LINUX) && defined(__KERNEL__) */
 
 /*************************************************************************/ /*!
@@ -157,12 +132,7 @@ PVRSRVDebugAssertFail(const IMG_CHAR *pszFile,
                       IMG_UINT32 ui32Line,
                       const IMG_CHAR *pszAssertion);
 
-#define PVR_ASSERT(EXPR) do										\
-	{															\
-		if (unlikely(!(EXPR)))								\
-			PVRSRVDebugAssertFail(__FILE__, __LINE__, #EXPR);	\
-	} while (0)
-
+#define PVR_ASSERT(EXPR)
 #endif /* defined(LINUX) && defined(__KERNEL__) */
 #endif /* defined(_WIN32) */
 #endif /* defined(__KLOCWORK__) */
@@ -198,9 +168,9 @@ PVRSRVDebugAssertFail(const IMG_CHAR *pszFile,
      * macros in a special way when the code is analysed by klocworks avoids
      * them. */
     #if defined(__KLOCWORK__)
-        #define PVR_ASSERT(EXPR) do { if (!(EXPR)) abort(); } while (0)
+        #define PVR_ASSERT(EXPR) 
     #else
-        #define PVR_ASSERT(EXPR) (void)(EXPR) /*!< Null Implementation of PVR_ASSERT (does nothing) */
+        #define PVR_ASSERT(EXPR) 
     #endif
 
     #define PVR_DBG_BREAK    /*!< Null Implementation of PVR_DBG_BREAK (does nothing) */
@@ -225,9 +195,9 @@ PVRSRVDebugAssertFail(const IMG_CHAR *pszFile,
 
 	/* These levels are always on with PVRSRV_NEED_PVR_DPF */
 	/*! @cond Doxygen_Suppress */
-	#define __PVR_DPF_0x001UL(...) PVRSRVDebugPrintf(DBGPRIV_FATAL, __VA_ARGS__)
-	#define __PVR_DPF_0x002UL(...) PVRSRVDebugPrintf(DBGPRIV_ERROR, __VA_ARGS__)
-	#define __PVR_DPF_0x080UL(...) PVRSRVDebugPrintf(DBGPRIV_BUFFERED, __VA_ARGS__)
+	#define __PVR_DPF_0x001UL(...)
+	#define __PVR_DPF_0x002UL(...)
+	#define __PVR_DPF_0x080UL(...)
 
 	/*
 	  The AdHoc-Debug level is only supported when enabled in the local
@@ -235,19 +205,19 @@ PVRSRVDebugAssertFail(const IMG_CHAR *pszFile,
 	  builds. An error is generated in the formal build if it is checked in.
 	*/
 #if defined(PVR_DPF_ADHOC_DEBUG_ON)
-	#define __PVR_DPF_0x100UL(...) PVRSRVDebugPrintf(DBGPRIV_DEBUG, __VA_ARGS__)
+	#define __PVR_DPF_0x100UL(...)
 #else
     /* Use an undefined token here to stop compilation dead in the offending module */
-	#define __PVR_DPF_0x100UL(...) __ERROR__PVR_DBG_DEBUG_is_in_use_but_has_not_been_enabled__Note_Debug_DPF_must_not_be_checked_in__Define_PVR_DPF_ADHOC_DEBUG_ON_for_testing
+	#define __PVR_DPF_0x100UL(...) 
 #endif
 
 	/* Some are compiled out completely in release builds */
 #if defined(DEBUG) || defined(DOXYGEN)
-	#define __PVR_DPF_0x004UL(...) PVRSRVDebugPrintf(DBGPRIV_WARNING, __VA_ARGS__)
-	#define __PVR_DPF_0x008UL(...) PVRSRVDebugPrintf(DBGPRIV_MESSAGE, __VA_ARGS__)
-	#define __PVR_DPF_0x010UL(...) PVRSRVDebugPrintf(DBGPRIV_VERBOSE, __VA_ARGS__)
-	#define __PVR_DPF_0x020UL(...) PVRSRVDebugPrintf(DBGPRIV_CALLTRACE, __VA_ARGS__)
-	#define __PVR_DPF_0x040UL(...) PVRSRVDebugPrintf(DBGPRIV_ALLOC, __VA_ARGS__)
+	#define __PVR_DPF_0x004UL(...) 
+	#define __PVR_DPF_0x008UL(...)
+	#define __PVR_DPF_0x010UL(...)
+	#define __PVR_DPF_0x020UL(...)
+	#define __PVR_DPF_0x040UL(...)
 #else
 	#define __PVR_DPF_0x004UL(...)
 	#define __PVR_DPF_0x008UL(...)
@@ -261,81 +231,32 @@ PVRSRVDebugAssertFail(const IMG_CHAR *pszFile,
 	 * so they can each be compiled out.
 	 */
 #if defined(DEBUG)
-	#define __PVR_DPF(lvl, ...) __PVR_DPF_ ## lvl (__FILE__, __LINE__, __VA_ARGS__)
+	#define __PVR_DPF(lvl, ...)
 #else
-	#define __PVR_DPF(lvl, ...) __PVR_DPF_ ## lvl ("", 0, __VA_ARGS__)
+	#define __PVR_DPF(lvl, ...)
 #endif
 	/*! @endcond */
 
 	/* Get rid of the double bracketing */
 	#define PVR_DPF(x) __PVR_DPF x
 
-	#define PVR_LOG_ERROR(_rc, _call) \
-		PVR_DPF((PVR_DBG_ERROR, "%s() failed (%s) in %s()", _call, PVRSRVGETERRORSTRING(_rc), __func__))
+	#define PVR_LOG_ERROR(_rc, _call) 
 
-	#define PVR_LOG_IF_ERROR(_rc, _call) do \
-		{ if (unlikely(_rc != PVRSRV_OK)) { \
-			PVR_DPF((PVR_DBG_ERROR, "%s() failed (%s) in %s()", _call, PVRSRVGETERRORSTRING(_rc), __func__)); \
-		  } \
-		MSC_SUPPRESS_4127\
-		} while (0)
+	#define PVR_LOG_IF_ERROR(_rc, _call)
 
-	#define PVR_LOGR_IF_NOMEM(_expr, _call) do \
-		{ if (unlikely(_expr == NULL)) { \
-			PVR_DPF((PVR_DBG_ERROR, "%s() failed (PVRSRV_ERROR_OUT_OF_MEMORY) in %s()", _call, __func__)); \
-			return PVRSRV_ERROR_OUT_OF_MEMORY; } \
-		MSC_SUPPRESS_4127\
-		} while (0)
+	#define PVR_LOGR_IF_NOMEM(_expr, _call)
 
-	#define PVR_LOGG_IF_NOMEM(_expr, _call, _err, _go) do \
-		{ if (unlikely(_expr == NULL)) { \
-			PVR_DPF((PVR_DBG_ERROR, "%s() failed (PVRSRV_ERROR_OUT_OF_MEMORY) in %s()", _call, __func__)); \
-			_err = PVRSRV_ERROR_OUT_OF_MEMORY; \
-			goto _go; } \
-		MSC_SUPPRESS_4127\
-		} while (0)
+	#define PVR_LOGG_IF_NOMEM(_expr, _call, _err, _go)
+	#define PVR_LOGR_IF_ERROR(_rc, _call)
 
-	#define PVR_LOGR_IF_ERROR(_rc, _call) do \
-		{ if (unlikely(_rc != PVRSRV_OK)) { \
-			PVR_DPF((PVR_DBG_ERROR, "%s() failed (%s) in %s()", _call, PVRSRVGETERRORSTRING(_rc), __func__)); \
-			return _rc; } \
-		MSC_SUPPRESS_4127\
-		} while (0)
+	#define PVR_LOGRN_IF_ERROR(_rc, _call)
 
-	#define PVR_LOGRN_IF_ERROR(_rc, _call) do \
-		{ if (unlikely(_rc != PVRSRV_OK)) { \
-			PVR_DPF((PVR_DBG_ERROR, "%s() failed (%s) in %s()", _call, PVRSRVGETERRORSTRING(_rc), __func__)); \
-			return; } \
-		MSC_SUPPRESS_4127\
-		} while (0)
+	#define PVR_LOGG_IF_ERROR(_rc, _call, _go) 
+	#define PVR_LOG_IF_FALSE(_expr, _msg)
 
-	#define PVR_LOGG_IF_ERROR(_rc, _call, _go) do \
-		{ if (unlikely(_rc != PVRSRV_OK)) { \
-			PVR_DPF((PVR_DBG_ERROR, "%s() failed (%s) in %s()", _call, PVRSRVGETERRORSTRING(_rc), __func__)); \
-			goto _go; } \
-		MSC_SUPPRESS_4127\
-		} while (0)
+	#define PVR_LOGR_IF_FALSE(_expr, _msg, _rc)
 
-	#define PVR_LOG_IF_FALSE(_expr, _msg) do \
-		{ if (unlikely(!(_expr))) { \
-			PVR_DPF((PVR_DBG_ERROR, "%s in %s()", _msg, __func__)); \
-		  } \
-		MSC_SUPPRESS_4127\
-		} while (0)
-
-	#define PVR_LOGR_IF_FALSE(_expr, _msg, _rc) do \
-		{ if (unlikely(!(_expr))) { \
-			PVR_DPF((PVR_DBG_ERROR, "%s in %s()", _msg, __func__)); \
-			return _rc; } \
-		MSC_SUPPRESS_4127\
-		} while (0)
-
-	#define PVR_LOGG_IF_FALSE(_expr, _msg, _go) do \
-		{ if (unlikely(!(_expr))) { \
-			PVR_DPF((PVR_DBG_ERROR, "%s in %s()", _msg, __func__)); \
-			goto _go; } \
-		MSC_SUPPRESS_4127\
-		} while (0)
+	#define PVR_LOGG_IF_FALSE(_expr, _msg, _go)
 
 /*************************************************************************/ /*!
 @Function       PVRSRVDebugPrintf
@@ -402,50 +323,25 @@ IMG_EXPORT void IMG_CALLCONV PVRSRVDebugPrintfDumpCCB(void);
 
 #endif /* defined(PVRSRV_NEED_PVR_DPF) */
 
-#define PVR_RETURN_IF_ERROR(_rc) do \
-	{ if (unlikely(_rc != PVRSRV_OK)) { \
-		return _rc; } \
-	MSC_SUPPRESS_4127\
-	} while (0)
-
+#define PVR_RETURN_IF_ERROR(_rc) 
 #if defined(DEBUG)
-	#define PVR_LOG_WARN(_rc, _call) \
-		PVR_DPF((PVR_DBG_WARNING, "%s() failed (%s) in %s()", _call, PVRSRVGETERRORSTRING(_rc), __func__))
-
-	#define PVR_LOG_WARN_IF_ERROR(_rc, _call) do \
-		{ if (unlikely(_rc != PVRSRV_OK)) \
-			PVR_DPF((PVR_DBG_WARNING, "%s() failed (%s) in %s()", _call, PVRSRVGETERRORSTRING(_rc), __func__)); \
-		MSC_SUPPRESS_4127\
-		} while (0)
+	#define PVR_LOG_WARN(_rc, _call) 
+	#define PVR_LOG_WARN_IF_ERROR(_rc, _call) 
 #else
-	#define PVR_LOG_WARN(_rc, _call) (void)(_rc)
-	#define PVR_LOG_WARN_IF_ERROR(_rc, _call) (void)(_rc)
+	#define PVR_LOG_WARN(_rc, _call)
+	#define PVR_LOG_WARN_IF_ERROR(_rc, _call)
 #endif
 
 /*! @cond Doxygen_Suppress */
 #if defined(PVR_DPF_FUNCTION_TRACE_ON)
 
-	#define PVR_DPF_ENTERED \
-        PVR_DPF((PVR_DBG_CALLTRACE, "|-> %s:%d entered", __func__, __LINE__))
-
-	#define PVR_DPF_ENTERED1(p1) \
-		PVR_DPF((PVR_DBG_CALLTRACE, "|-> %s:%d entered (0x%lx)", __func__, __LINE__, ((unsigned long)p1)))
-
-	#define PVR_DPF_RETURN_RC(a) \
-        do { int _r = (a); PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned %d", __func__, __LINE__, (_r))); return (_r); MSC_SUPPRESS_4127 } while (0)
-
-	#define PVR_DPF_RETURN_RC1(a,p1) \
-		do { int _r = (a); PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned %d (0x%lx)", __func__, __LINE__, (_r), ((unsigned long)p1))); return (_r); MSC_SUPPRESS_4127 } while (0)
-
-	#define PVR_DPF_RETURN_VAL(a) \
-		do { PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned with value", __func__, __LINE__ )); return (a); MSC_SUPPRESS_4127 } while (0)
-
-	#define PVR_DPF_RETURN_OK \
-		do { PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned ok", __func__, __LINE__)); return PVRSRV_OK; MSC_SUPPRESS_4127 } while (0)
-
-	#define PVR_DPF_RETURN \
-		do { PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned", __func__, __LINE__)); return; MSC_SUPPRESS_4127 } while (0)
-
+	#define PVR_DPF_ENTERED 
+	#define PVR_DPF_ENTERED1(p1) 
+	#define PVR_DPF_RETURN_RC(a) 
+	#define PVR_DPF_RETURN_RC1(a,p1) 
+	#define PVR_DPF_RETURN_VAL(a) 
+	#define PVR_DPF_RETURN_OK 
+	#define PVR_DPF_RETURN 
 	#if !defined(DEBUG)
 	#error PVR DPF Function trace enabled in release build, rectify
 	#endif
@@ -558,12 +454,11 @@ IMG_EXPORT void IMG_CALLCONV PVRSRVTrace(const IMG_CHAR* pszFormat, ... )
 /*! @cond Doxygen_Suppress */
 /* Macros used to trace calls */
 #if defined(DEBUG)
-	#define PVR_DBG_FILELINE , (__FILE__), (__LINE__)
-	#define PVR_DBG_FILELINE_PARAM , const IMG_CHAR *pszaFile, IMG_UINT32 ui32Line
-	#define PVR_DBG_FILELINE_ARG , pszaFile, ui32Line
-	#define PVR_DBG_FILELINE_FMT " %s:%u"
-	#define PVR_DBG_FILELINE_UNREF() do { PVR_UNREFERENCED_PARAMETER(pszaFile); \
-				PVR_UNREFERENCED_PARAMETER(ui32Line); } while(0)
+	#define PVR_DBG_FILELINE 
+	#define PVR_DBG_FILELINE_PARAM 
+	#define PVR_DBG_FILELINE_ARG 
+	#define PVR_DBG_FILELINE_FMT
+	#define PVR_DBG_FILELINE_UNREF() 
 #else
 	#define PVR_DBG_FILELINE
 	#define PVR_DBG_FILELINE_PARAM

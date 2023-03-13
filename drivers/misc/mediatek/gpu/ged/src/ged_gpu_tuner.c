@@ -31,13 +31,9 @@ static struct dentry *gpsDebugEntry;
 static int debug = DEBUG_OFF;
 
 #define GPU_TUNER_TAG "[GT]"
-#define GPU_TUNER_DEBUG(fmt, args...) \
-		do { \
-			if (debug == DEBUG_ON) \
-				pr_debug(GPU_TUNER_TAG fmt, ##args); \
-		} while (0)
-#define GPU_TUNER_INFO(fmt, args...) pr_info(GPU_TUNER_TAG fmt, ##args)
-#define GPU_TUNER_ERROR(fmt, args...) pr_info(GPU_TUNER_TAG fmt, ##args)
+#define GPU_TUNER_DEBUG(fmt, args...)
+#define GPU_TUNER_INFO(fmt, args...)
+#define GPU_TUNER_ERROR(fmt, args...)
 
 static void _tolower_s(
 		char *p)

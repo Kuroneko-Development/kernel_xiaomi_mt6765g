@@ -42,7 +42,6 @@
 #include <mt-plat/sync_write.h>
 #include <mt-plat/mtk_io.h>
 #include <mt-plat/aee.h>
-/* #include <trace/events/mtk_events.h> */
 
 #ifdef CONFIG_MTK_TINYSYS_SSPM_SUPPORT
 #include "sspm_ipi.h"
@@ -53,8 +52,34 @@
 #include "mtk_cpufreq_internal.h"
 #include "mtk_cpufreq_platform.h"
 #include "mtk_cpufreq_hybrid.h"
-#include "mtk_cpufreq_opp_pv_table.h"
-#include "mtk_cpufreq_debug.h"
+
+#ifdef CONFIG_KURONEKO
+
+#ifdef CONFIG_KURONEKO_EXTREME
+#include "stable_cpufreq_pv.h"
+#endif
+
+#ifdef CONFIG_KURONEKO_BALANCE
+#include "stable_cpufreq_pv.h"
+#endif
+
+#ifdef CONFIG_KURONEKO_STABLE
+#include "stable_cpufreq_pv.h"
+#endif
+
+#ifdef CONFIG_KURONEKO_GAMING
+#include "stable_cpufreq_pv.h"
+#endif
+
+#ifdef CONFIG_KURONEKO_POWERSAVE
+#include "powersave_cpufreq_pv.h"
+#endif
+
+#else
+
+#include "extreme_cpufreq_pv.h"
+
+#endif
 
 #ifdef CONFIG_HYBRID_CPU_DVFS
 
@@ -82,11 +107,7 @@ static void __iomem *csram_base;
 #define OFFS_LOG_S	0x03d0
 #define OFFS_LOG_E	(OFFS_LOG_S + DVFS_LOG_NUM * ENTRY_EACH_LOG * 4)
 
-#ifdef REPORT_IDLE_FREQ
-#define MAX_LOG_FETCH 80
-#else
-#define MAX_LOG_FETCH 40
-#endif
+#define MAX_LOG_FETCH 20
 /* log_box_parsed[MAX_LOG_FETCH] is also used to save last log entry */
 static struct cpu_dvfs_log_box log_box_parsed[1 + MAX_LOG_FETCH];
 
@@ -138,27 +159,27 @@ int Ripi_cpu_dvfs_thread(void *data)
 	unsigned long long tf_sum, t_diff, avg_f;
 	int j;
 
-	/* tag_pr_info("CPU DVFS received thread\n"); */
+	/* tag_no_printk("CPU DVFS received thread\n"); */
 	cpufreq_act.data = (void *)cpufreq_buf;
 	ret = sspm_ipi_recv_registration_ex(IPI_ID_CPU_DVFS,
 						&cpudvfs_lock, &cpufreq_act);
 
 	if (ret != 0) {
-		tag_pr_notice
+		tag_pr_no_notice
 		("Error: ipi_recv_registration CPU DVFS error: %d\n", ret);
 		do {
 			msleep(1000);
 		} while (!kthread_should_stop());
 		return (-1);
 	}
-	/* tag_pr_info("sspm_ipi_recv_registration */
+	/* tag_no_printk("sspm_ipi_recv_registration */
 	/*IPI_ID_CPU_DVFS pass!!(%d)\n", ret); */
 
 	/* an endless loop in which we are doing our work */
 	do {
-		/* tag_pr_info("sspm_ipi_recv_wait IPI_ID_CPU_DVFS\n"); */
+		/* tag_no_printk("sspm_ipi_recv_wait IPI_ID_CPU_DVFS\n"); */
 		sspm_ipi_recv_wait(IPI_ID_CPU_DVFS);
-		/* tag_pr_info("Info: CPU DVFS thread received ID=%d,*/
+		/* tag_no_printk("Info: CPU DVFS thread received ID=%d,*/
 		/* i=%d\n", cpufreq_act.id, i); */
 		spin_lock_irqsave(&cpudvfs_lock, flags);
 		memcpy(pwdata, cpufreq_buf, sizeof(pwdata));
@@ -166,12 +187,7 @@ int Ripi_cpu_dvfs_thread(void *data)
 
 		bk_log_offs = pwdata[0];
 		num_log = 0;
-#ifdef REPORT_IDLE_FREQ
-		while ((bk_log_offs != pwdata[1]) &&
-			(num_log < MAX_LOG_FETCH)) {
-#else
 		while (bk_log_offs != pwdata[1]) {
-#endif
 			buf[0] = csram_read(bk_log_offs);
 			bk_log_offs += 4;
 			if (bk_log_offs >= OFFS_LOG_E)
@@ -272,23 +288,6 @@ int Ripi_cpu_dvfs_thread(void *data)
 	arch_get_cluster_id(p->mt_policy->cpu);
 #endif
 
-				if (cid == 0) {
-					met_tag_oneshot(0, "sched_dvfs_max_c0",
-							p->mt_policy->max);
-					met_tag_oneshot(0, "sched_dvfs_min_c0",
-							p->mt_policy->min);
-				} else if (cid == 1) {
-					met_tag_oneshot(0, "sched_dvfs_max_c1",
-							p->mt_policy->max);
-					met_tag_oneshot(0, "sched_dvfs_min_c1",
-							p->mt_policy->min);
-				} else if (cid == 2) {
-					met_tag_oneshot(0, "sched_dvfs_max_c2",
-						p->mt_policy->max);
-					met_tag_oneshot(0, "sched_dvfs_min_c2",
-						p->mt_policy->min);
-				}
-
 				/* Policy notification */
 				if (p->idx_opp_tbl != j ||
 				(p->idx_opp_ppm_limit != previous_limit) ||
@@ -365,12 +364,10 @@ int dvfs_to_spm2_command(u32 cmd, struct cdvfs_data *cdvfs_d)
 		cpufreq_ver("I'd like to set cluster%d ON/OFF state to %d)\n",
 			cdvfs_d->u.set_fv.arg[0], cdvfs_d->u.set_fv.arg[1]);
 
-		aee_record_cpu_dvfs_cb(6);
 		ret = sspm_ipi_send_sync_new(IPI_ID_CPU_DVFS, IPI_OPT_POLLING,
 		cdvfs_d, len, &ack_data, 1);
-		aee_record_cpu_dvfs_cb(7);
 		if (ret != 0) {
-			tag_pr_notice
+			tag_pr_no_notice
 			("ret = %d, set cluster%d ON/OFF state to %d\n",
 				ret, cdvfs_d->u.set_fv.arg[0],
 				cdvfs_d->u.set_fv.arg[1]);
@@ -379,7 +376,7 @@ int dvfs_to_spm2_command(u32 cmd, struct cdvfs_data *cdvfs_d)
 			__func__, __LINE__, ret);
 #endif
 		} else if (ack_data < 0) {
-			tag_pr_notice
+			tag_pr_no_notice
 			("ret = %d, set cluster%d ON/OFF state to %d\n",
 			ret, cdvfs_d->u.set_fv.arg[0],
 			cdvfs_d->u.set_fv.arg[1]);
@@ -389,7 +386,6 @@ int dvfs_to_spm2_command(u32 cmd, struct cdvfs_data *cdvfs_d)
 			__func__, __LINE__, cmd, ret);
 #endif
 		}
-		aee_record_cpu_dvfs_cb(8);
 		break;
 #if 0
 	case IPI_SET_FREQ:
@@ -645,7 +641,6 @@ int cpuhvfs_set_cluster_on_off(int cluster_id, int state)
 	cdvfs_d.u.set_fv.arg[0] = cluster_id;
 	cdvfs_d.u.set_fv.arg[1] = state;
 
-	aee_record_cpu_dvfs_cb(5);
 	dvfs_to_spm2_command(IPI_SET_CLUSTER_ON_OFF, &cdvfs_d);
 
 	return 0;
@@ -974,7 +969,7 @@ void __init cpuhvfs_pvt_tbl_create(void)
 #endif
 
 	recordRef = ioremap_nocache(DBG_REPO_TBL_S, PVT_TBL_SIZE);
-	tag_pr_info("DVFS - @(Record)%s----->(%p)\n", __func__, recordRef);
+	tag_no_printk("DVFS - @(Record)%s----->(%p)\n", __func__, recordRef);
 	memset_io((u8 *)recordRef, 0x00, PVT_TBL_SIZE);
 
 	recordTbl = xrecordTbl[lv];
@@ -1067,7 +1062,7 @@ void __init cpuhvfs_pvt_tbl_create(void)
 
 #ifdef CCI_MAP_TBL_SUPPORT
 	record_CCI_Ref = ioremap_nocache(DBG_REPO_CCI_TBL_S, PVT_CCI_TBL_SIZE);
-	tag_pr_info("DVFS - @(Record)%s----->(%p)\n", __func__, record_CCI_Ref);
+	tag_no_printk("DVFS - @(Record)%s----->(%p)\n", __func__, record_CCI_Ref);
 	memset_io((u8 *)record_CCI_Ref, 0x00, PVT_CCI_TBL_SIZE);
 
 	record_CCI_Tbl = xrecord_CCI_Tbl[lv];
@@ -1084,49 +1079,6 @@ void __init cpuhvfs_pvt_tbl_create(void)
 #endif
 }
 
-static int dbg_repo_proc_show(struct seq_file *m, void *v)
-{
-	int i;
-	u32 *repo = m->private;
-	char ch;
-
-	for (i = 0; i < DBG_REPO_NUM; i++) {
-		if (i >= REPO_I_LOG_S && (i - REPO_I_LOG_S) %
-						ENTRY_EACH_LOG == 0)
-			ch = ':';	/* timestamp */
-		else
-			ch = '.';
-
-		seq_printf(m, "%4d%c%08x%c",
-				i, ch, repo[i], i % 4 == 3 ? '\n' : ' ');
-	}
-
-	return 0;
-}
-
-static int dbg_repo_bak_proc_show(struct seq_file *m, void *v)
-{
-	int i;
-	u32 *repo = m->private;
-	char ch;
-
-	for (i = 0; i < DBG_REPO_NUM; i++) {
-		if (i >= REPO_I_LOG_S && (i - REPO_I_LOG_S) %
-						ENTRY_EACH_LOG == 0)
-			ch = ':';	/* timestamp */
-		else
-			ch = '.';
-
-		seq_printf(m, "%4d%c%08x%c",
-				i, ch, repo[i], i % 4 == 3 ? '\n' : ' ');
-	}
-
-	return 0;
-}
-
-PROC_FOPS_RO(dbg_repo);
-PROC_FOPS_RO(dbg_repo_bak);
-
 static int create_cpuhvfs_debug_fs(void)
 {
 	int i;
@@ -1139,14 +1091,12 @@ static int create_cpuhvfs_debug_fs(void)
 	};
 
 	const struct pentry entries[] = {
-		PROC_ENTRY_DATA(dbg_repo),
-		PROC_ENTRY_DATA(dbg_repo_bak),
 	};
 
 	/* create /proc/cpuhvfs */
 	dir = proc_mkdir("cpuhvfs", NULL);
 	if (!dir) {
-		tag_pr_notice("fail to create /proc/cpuhvfs @ %s()\n",
+		tag_pr_no_notice("fail to create /proc/cpuhvfs @ %s()\n",
 								__func__);
 		return -ENOMEM;
 	}
@@ -1154,7 +1104,7 @@ static int create_cpuhvfs_debug_fs(void)
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create_data(entries[i].name, 0664,
 		    dir, entries[i].fops, entries[i].data))
-			tag_pr_notice("%s(), create /proc/cpuhvfs/%s failed\n",
+			tag_pr_no_notice("%s(), create /proc/cpuhvfs/%s failed\n",
 						__func__, entries[i].name);
 	}
 
@@ -1166,13 +1116,13 @@ int cpuhvfs_module_init(void)
 	int r;
 
 	if (!log_repo) {
-		tag_pr_notice("FAILED TO PRE-INIT CPUHVFS\n");
+		tag_pr_no_notice("FAILED TO PRE-INIT CPUHVFS\n");
 		return -ENODEV;
 	}
 
 	r = create_cpuhvfs_debug_fs();
 	if (r) {
-		tag_pr_notice("FAILED TO CREATE DEBUG FILESYSTEM (%d)\n", r);
+		tag_pr_no_notice("FAILED TO CREATE DEBUG FILESYSTEM (%d)\n", r);
 		return r;
 	}
 
@@ -1190,11 +1140,11 @@ static int __init dvfsp_module_init(void)
 
 	r = platform_driver_register(&_mt_dvfsp_pdrv);
 	if (r)
-		tag_pr_notice("fail to register sspm driver @ %s()\n",
+		tag_pr_no_notice("fail to register sspm driver @ %s()\n",
 								__func__);
 
 	if (!dvfsp_probe_done) {
-		tag_pr_notice("FAILED TO PROBE SSPM DEVICE\n");
+		tag_pr_no_notice("FAILED TO PROBE SSPM DEVICE\n");
 		return -ENODEV;
 	}
 
@@ -1246,7 +1196,7 @@ static int __init cpuhvfs_pre_module_init(void)
 
 	r = dvfsp_module_init();
 	if (r) {
-		tag_pr_notice("FAILED TO INIT DVFS SSPM (%d)\n", r);
+		tag_pr_no_notice("FAILED TO INIT DVFS SSPM (%d)\n", r);
 		return r;
 	}
 

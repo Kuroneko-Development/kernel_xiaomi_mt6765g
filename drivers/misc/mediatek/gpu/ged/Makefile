@@ -10,6 +10,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
+KBUILD_CFLAGS += -ffast-math
 
 GED_TOP = $(srctree)/drivers/misc/mediatek/gpu/ged
 MTK_TOP = $(srctree)/drivers/misc/mediatek/
@@ -44,7 +45,7 @@ ccflags-y += -DGED_KPI_CPU_TRI_CLUSTER
 endif
 
 ifneq (,$(filter $(CONFIG_MTK_PLATFORM), "mt6739"))
-ccflags-y += -DGED_KPI_CPU_SINGLE_CLUSTER
+#ccflags-y += -DGED_KPI_CPU_SINGLE_CLUSTER
 endif
 
 ifneq (,$(filter $(CONFIG_MTK_PLATFORM), "mt6765"))
@@ -65,15 +66,9 @@ ccflags-y += -DGED_MODULE_LATE_INIT
 endif
 endif
 
-ifneq ($(strip $(TARGET_BUILD_VARIANT)),)
-ifneq ($(strip $(TARGET_BUILD_VARIANT)),eng)
 VER:=user
-ifeq ($(CONFIG_EXTREME_LOW_RAM), y)
 ccflags-y += -DGED_LOG_SIZE_LIMITED
 ccflags-y += -DGED_BUFFER_LOG_DISABLE
-endif
-endif
-endif
 
 ccflags-y += -DMET_USER_EVENT_SUPPORT
 
@@ -107,13 +102,6 @@ ccflags-y += -I$(srctree)/drivers/misc/mediatek/cmdq/v3/$(subst ",,$(CONFIG_MTK_
 endif
 endif
 
-#$(info $$CONFIG_MTK_GPU_COMMON_DVFS_SUPPORT is [${CONFIG_MTK_GPU_COMMON_DVFS_SUPPORT}])
-
-#ccflags-$(CONFIG_MTK_TINYSYS_SSPM_SUPPORT) += -DGED_SSPM
-ifeq ($(CONFIG_MTK_TINYSYS_SSPM_SUPPORT),y)
-#ccflags-y += -DGED_SSPM
-endif
-
 ifneq ($(CONFIG_FPGA_EARLY_PORTING), y)
 ifeq ($(CONFIG_MTK_GPU_COMMON_DVFS_SUPPORT),y)
 ccflags-y += -DENABLE_COMMON_DVFS \
@@ -130,12 +118,10 @@ ifeq ($(CONFIG_MTK_FTRACE_DEFAULT_ENABLE),y)
 ccflags-y += -DENABLE_GED_SYSTRACE_UTIL
 endif
 
+ccflags-y += -DGED_LOG_SIZE_LIMITED
+ccflags-y += -DGED_BUFFER_LOG_DISABLE
 
-ccflags-y += -DGED_DVFS_DEBUG_BUF
-
-ifeq ($(VER),eng)
-ccflags-y += -DGED_DEBUG_IOCTL_LOCK
-endif
+#ccflags-y += -DGED_DVFS_DEBUG_BUF
 
 ccflags-y += \
 	-include $(GED_TOP)/include/config_kernel_$(VER).h

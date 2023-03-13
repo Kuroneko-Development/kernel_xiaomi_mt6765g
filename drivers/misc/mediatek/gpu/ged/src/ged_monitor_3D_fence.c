@@ -93,13 +93,6 @@ static void ged_monitor_3D_fence_work_cb(struct work_struct *psWork)
 				mtk_set_bottom_gpu_freq(0);
 
 #if 0
-#ifdef CONFIG_MTK_SCHED_TRACERS
-				if (ged_monitor_3D_fence_systrace) {
-					unsigned long long t = cpu_clock(smp_processor_id());
-
-					trace_gpu_sched_switch("Smart Boost", t, 0, 0, 1);
-				}
-#endif
 #endif
 			}
 		}
@@ -175,13 +168,6 @@ GED_ERROR ged_monitor_3D_fence_add(int fence_fd)
 			if (mtk_get_bottom_gpu_freq(&uiFreqLevelID)) {
 				if (uiFreqLevelID != mt_gpufreq_get_dvfs_table_num() - 1) {
 #if 0
-#ifdef CONFIG_MTK_SCHED_TRACERS
-					if (ged_monitor_3D_fence_systrace) {
-						unsigned long long t = cpu_clock(smp_processor_id());
-
-						trace_gpu_sched_switch("Smart Boost", t, 1, 0, 1);
-					}
-#endif
 #endif
 					if (ged_monitor_3D_fence_switch)
 						mtk_set_bottom_gpu_freq(mt_gpufreq_get_dvfs_table_num() - 1);

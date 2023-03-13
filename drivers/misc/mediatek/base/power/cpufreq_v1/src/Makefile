@@ -26,7 +26,6 @@ ccflags-y += -I$(srctree)/drivers/misc/mediatek/sspm/$(CONFIG_MTK_PLATFORM)
 obj-y := mtk_cpufreq_main.o
 obj-y += mtk_cpufreq_interface.o
 obj-y += mtk_cpufreq_api.o
-obj-y += mtk_cpufreq_debug.o
 obj-y += mtk_cpufreq_hybrid.o
 
 # platform dependent files

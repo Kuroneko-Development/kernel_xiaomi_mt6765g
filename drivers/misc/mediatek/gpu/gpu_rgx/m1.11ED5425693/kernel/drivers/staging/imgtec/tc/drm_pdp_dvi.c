@@ -71,7 +71,7 @@ static const struct pdp_mode_data pdp_extra_modes[] = {
 	{
 		.hdisplay = 1280,
 		.vdisplay = 720,
-		.vrefresh = 60,
+		.vrefresh = 66,
 		.reduced_blanking = false,
 		.interlaced = false,
 		.margins = false,
@@ -79,7 +79,7 @@ static const struct pdp_mode_data pdp_extra_modes[] = {
 	{
 		.hdisplay = 1920,
 		.vdisplay = 1080,
-		.vrefresh = 60,
+		.vrefresh = 66,
 		.reduced_blanking = false,
 		.interlaced = false,
 		.margins = false,

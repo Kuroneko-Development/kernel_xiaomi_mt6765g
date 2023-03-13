@@ -136,35 +136,6 @@ AddToBufferCCB(const IMG_CHAR *pszFileName, IMG_UINT32 ui32Line,
 
 void PVRSRVDebugPrintfDumpCCB(void)
 {
-	int i;
-
-	mutex_lock(&gsDebugCCBMutex);
-
-	for (i = 0; i < PVRSRV_DEBUG_CCB_MAX; i++)
-	{
-		PVRSRV_DEBUG_CCB *psDebugCCBEntry =
-			&gsDebugCCB[(giOffset + i) % PVRSRV_DEBUG_CCB_MAX];
-
-		/* Early on, we won't have PVRSRV_DEBUG_CCB_MAX messages */
-		if (!psDebugCCBEntry->pszFile)
-		{
-			continue;
-		}
-
-		printk(KERN_ERR "%s:%d: (%ld.%ld, tid=%u, pid=%u) %s\n",
-			   psDebugCCBEntry->pszFile,
-			   psDebugCCBEntry->iLine,
-			   (long)psDebugCCBEntry->sTimeVal.tv_sec,
-			   (long)psDebugCCBEntry->sTimeVal.tv_usec,
-			   psDebugCCBEntry->ui32TID,
-			   psDebugCCBEntry->ui32PID,
-			   psDebugCCBEntry->pcMesg);
-
-		/* Clear this entry so it doesn't get printed the next time again. */
-		psDebugCCBEntry->pszFile = NULL;
-	}
-
-	mutex_unlock(&gsDebugCCBMutex);
 }
 
 #else /* defined(PVRSRV_DEBUG_CCB_MAX) */
@@ -299,33 +270,6 @@ static IMG_BOOL VBAppend(IMG_CHAR *pszBuf, IMG_UINT32 ui32BufSiz, const IMG_CHAR
 */ /**************************************************************************/
 void PVRSRVReleasePrintf(const IMG_CHAR *pszFormat, ...)
 {
-	va_list vaArgs;
-	unsigned long ulLockFlags = 0;
-	IMG_CHAR *pszBuf;
-	IMG_UINT32 ui32BufSiz;
-	IMG_INT32  result;
-
-	SelectBuffer(&pszBuf, &ui32BufSiz);
-
-	va_start(vaArgs, pszFormat);
-
-	GetBufferLock(&ulLockFlags);
-
-	result = snprintf(pszBuf, (ui32BufSiz - 2), "PVR_K:  %u: ", current->pid);
-	PVR_ASSERT(result>0);
-	ui32BufSiz -= result;
-
-	if (VBAppend(pszBuf, ui32BufSiz, pszFormat, vaArgs))
-	{
-		printk(KERN_ERR "PVR_K:(Message Truncated): %s\n", pszBuf);
-	}
-	else
-	{
-		printk(KERN_ERR "%s\n", pszBuf);
-	}
-
-	ReleaseBufferLock(ulLockFlags);
-	va_end(vaArgs);
 }
 
 #if defined(PVRSRV_NEED_PVR_TRACE)
@@ -338,34 +282,6 @@ void PVRSRVReleasePrintf(const IMG_CHAR *pszFormat, ...)
 */ /**************************************************************************/
 void PVRSRVTrace(const IMG_CHAR *pszFormat, ...)
 {
-	va_list VArgs;
-	unsigned long ulLockFlags = 0;
-	IMG_CHAR *pszBuf;
-	IMG_UINT32 ui32BufSiz;
-	IMG_INT32  result;
-
-	SelectBuffer(&pszBuf, &ui32BufSiz);
-
-	va_start(VArgs, pszFormat);
-
-	GetBufferLock(&ulLockFlags);
-
-	result = snprintf(pszBuf, (ui32BufSiz - 2), "PVR: %u: ", current->pid);
-	PVR_ASSERT(result>0);
-	ui32BufSiz -= result;
-
-	if (VBAppend(pszBuf, ui32BufSiz, pszFormat, VArgs))
-	{
-		printk(KERN_ERR "PVR_K:(Message Truncated): %s\n", pszBuf);
-	}
-	else
-	{
-		printk(KERN_ERR "%s\n", pszBuf);
-	}
-
-	ReleaseBufferLock(ulLockFlags);
-
-	va_end(VArgs);
 }
 
 #endif /* defined(PVRSRV_NEED_PVR_TRACE) */
@@ -407,129 +323,6 @@ void PVRSRVDebugPrintf(IMG_UINT32 ui32DebugLevel,
 			   const IMG_CHAR *pszFormat,
 			   ...)
 {
-	const IMG_CHAR *pszFileName = pszFullFileName;
-	IMG_CHAR *pszLeafName;
-	va_list vaArgs;
-	unsigned long ulLockFlags = 0;
-	IMG_CHAR *pszBuf;
-	IMG_UINT32 ui32BufSiz;
-
-	if (!(gPVRDebugLevel & ui32DebugLevel))
-	{
-		return;
-	}
-
-	SelectBuffer(&pszBuf, &ui32BufSiz);
-
-	va_start(vaArgs, pszFormat);
-
-	GetBufferLock(&ulLockFlags);
-
-	switch (ui32DebugLevel)
-	{
-		case DBGPRIV_FATAL:
-		{
-			strncpy(pszBuf, "PVR_K:(Fatal): ", (ui32BufSiz - 2));
-			break;
-		}
-		case DBGPRIV_ERROR:
-		{
-			strncpy(pszBuf, "PVR_K:(Error): ", (ui32BufSiz - 2));
-			break;
-		}
-		case DBGPRIV_WARNING:
-		{
-			strncpy(pszBuf, "PVR_K:(Warn):  ", (ui32BufSiz - 2));
-			break;
-		}
-		case DBGPRIV_MESSAGE:
-		{
-			strncpy(pszBuf, "PVR_K:(Mesg):  ", (ui32BufSiz - 2));
-			break;
-		}
-		case DBGPRIV_VERBOSE:
-		{
-			strncpy(pszBuf, "PVR_K:(Verb):  ", (ui32BufSiz - 2));
-			break;
-		}
-		case DBGPRIV_DEBUG:
-		{
-			strncpy(pszBuf, "PVR_K:(Debug): ", (ui32BufSiz - 2));
-			break;
-		}
-		case DBGPRIV_CALLTRACE:
-		case DBGPRIV_ALLOC:
-		case DBGPRIV_BUFFERED:
-		default:
-		{
-			strncpy(pszBuf, "PVR_K: ", (ui32BufSiz - 2));
-			break;
-		}
-	}
-	pszBuf[ui32BufSiz - 1] = '\0';
-
-	if (current->pid == task_tgid_nr(current))
-	{
-		(void) BAppend(pszBuf, ui32BufSiz, "%5u: ", current->pid);
-	}
-	else
-	{
-		(void) BAppend(pszBuf, ui32BufSiz, "%5u-%5u: ", task_tgid_nr(current) /* pid id of group*/, current->pid /* task id */);
-	}
-
-	if (VBAppend(pszBuf, ui32BufSiz, pszFormat, vaArgs))
-	{
-		printk(KERN_ERR "PVR_K:(Message Truncated): %s\n", pszBuf);
-	}
-	else
-	{
-		IMG_BOOL bTruncated = IMG_FALSE;
-
-#if !defined(__sh__)
-		pszLeafName = (IMG_CHAR *)strrchr (pszFileName, '/');
-
-		if (pszLeafName)
-		{
-			pszFileName = pszLeafName+1;
-		}
-#endif /* __sh__ */
-
-#if defined(DEBUG)
-		{
-			static const IMG_CHAR *lastFile;
-
-			if (lastFile == pszFileName)
-			{
-				bTruncated = BAppend(pszBuf, ui32BufSiz, " [%u]", ui32Line);
-			}
-			else
-			{
-				bTruncated = BAppend(pszBuf, ui32BufSiz, " [%s:%u]", pszFileName, ui32Line);
-				lastFile = pszFileName;
-			}
-		}
-#endif
-
-		if (bTruncated)
-		{
-			printk(KERN_ERR "PVR_K:(Message Truncated): %s\n", pszBuf);
-		}
-		else
-		{
-			if (ui32DebugLevel & DBGPRIV_BUFFERED)
-			{
-				AddToBufferCCB(pszFileName, ui32Line, pszBuf);
-			}
-			else
-			{
-				printk(KERN_ERR "%s\n", pszBuf);
-			}
-		}
-	}
-
-	ReleaseBufferLock(ulLockFlags);
-
-	va_end (vaArgs);
 }
 
 #endif /* PVRSRV_NEED_PVR_DPF */
@@ -578,17 +371,6 @@ static void *_DebugVersionSeqNext(struct seq_file *psSeqFile,
 				  void *pvData,
 				  loff_t *puiPosition)
 {
-	PVRSRV_DATA *psPVRSRVData = (PVRSRV_DATA *)psSeqFile->private;
-	loff_t uiCurrentPosition = 1;
-
-	PVR_UNREFERENCED_PARAMETER(pvData);
-
-	(*puiPosition)++;
-
-	return List_PVRSRV_DEVICE_NODE_Any_va(psPVRSRVData->psDeviceNodeList,
-										  _DebugVersionCompare_AnyVaCb,
-										  &uiCurrentPosition,
-										  *puiPosition);
 }
 
 #define SEQ_PRINT_VERSION_FMTSPEC "%s Version: %u.%u @ %u (%s) build options: 0x%08x %s\n"

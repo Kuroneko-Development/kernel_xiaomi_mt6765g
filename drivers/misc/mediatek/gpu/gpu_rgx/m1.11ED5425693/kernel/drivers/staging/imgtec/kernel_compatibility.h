@@ -57,12 +57,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * so we work around the limitation by vsnprintf() + seq_puts().
  */
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0))
-#define seq_vprintf(seq_file, fmt, args) \
-do { \
-	char aszBuffer[512]; /* maximum message buffer size */ \
-	vsnprintf(aszBuffer, sizeof(aszBuffer), fmt, args); \
-	seq_puts(seq_file, aszBuffer); \
-} while(0)
+#define seq_vprintf(seq_file, fmt, args) 
 #endif /* (LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0)) */
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0))

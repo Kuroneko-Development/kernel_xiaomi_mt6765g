@@ -40,8 +40,7 @@ typedef struct {
 	struct list_head ge_entry_list;
 } GEEntry;
 
-#define GED_PDEBUG(fmt, ...)\
-	pr_debug("[GRALLOC_EXTRA,%s:%d]" fmt, __FILE__, __LINE__, ##__VA_ARGS__)
+#define GED_PDEBUG(fmt, ...)
 
 static struct kmem_cache *gPoolCache;
 static struct dentry *gDFSEntry;

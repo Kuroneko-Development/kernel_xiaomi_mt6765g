@@ -645,25 +645,8 @@ static void DisableOOMKiller(void)
 static inline void
 _DumpPageArray(struct page **pagearray, IMG_UINT32 uiPagesToPrint)
 {
-#if defined(PHYSMEM_OSMEM_DEBUG_DUMP_PAGE_ARRAY)
-	IMG_UINT32 i;
-	if (pagearray)
-	{
-		printk("Array %p:\n", pagearray);
-		for (i = 0; i < uiPagesToPrint; i++)
-		{
-			printk("%p | ", (pagearray)[i]);
-		}
-		printk("\n");
-	}
-	else
-	{
-		printk("Array is NULL:\n");
-	}
-#else
 	PVR_UNREFERENCED_PARAMETER(pagearray);
 	PVR_UNREFERENCED_PARAMETER(uiPagesToPrint);
-#endif
 }
 
 /* Debugging function that dumps out the number of pages for every
@@ -673,35 +656,6 @@ _DumpPageArray(struct page **pagearray, IMG_UINT32 uiPagesToPrint)
 static void
 _DumpPoolStructure(void)
 {
-#if defined(PHYSMEM_OSMEM_DEBUG_DUMP_PAGE_POOL)
-	LinuxPagePoolEntry *psPagePoolEntry, *psTempPoolEntry;
-	struct list_head *psPoolHead = NULL;
-	IMG_UINT32 j;
-	IMG_UINT32 *puiCounter;
-
-	printk("\n");
-	/* Empty all pools */
-	for (j = 0; j < PHYSMEM_OSMEM_NUM_OF_POOLS; j++)
-	{
-
-		printk("pool = %u\n", j);
-
-		/* Get the correct list for this caching mode */
-		if (!_GetPoolListHead(g_aui32CPUCacheFlags[j], &psPoolHead, &puiCounter))
-		{
-			break;
-		}
-
-		list_for_each_entry_safe(psPagePoolEntry,
-								 psTempPoolEntry,
-								 psPoolHead,
-								 sPagePoolItem)
-		{
-			printk("%u | ", psPagePoolEntry->uiItemsRemaining);
-		}
-		printk("\n");
-	}
-#endif
 }
 
 /* Free a certain number of pages from the page pool.

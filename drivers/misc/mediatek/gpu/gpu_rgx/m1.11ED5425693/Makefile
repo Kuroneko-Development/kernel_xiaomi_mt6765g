@@ -1,8 +1,8 @@
-OPTIM = -Os
+KBUILD_CFLAGS += -fdata-sections -ffunction-sections -finline-functions -ftree-vectorize -funroll-loops -ffast-math -fforce-addr -Wno-unused-label -Wno-ignored-qualifiers
+
+OPTIM = -O3 
 
 MTK_GPU_VERSION = $(subst ",,$(CONFIG_MTK_GPU_VERSION))
-
-ccflags-$(CONFIG_MTK_TINYSYS_SSPM_SUPPORT) += -DSSPM_DEBUG
 
 ifeq ($(word 2,$(MTK_GPU_VERSION)),marlowe)
 	ECO := v2

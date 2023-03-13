@@ -88,9 +88,6 @@ bool mtk_get_timer_base_dvfs_margin(int *pi32MaginValue);
 /* CAP */
 bool mtk_get_gpu_dvfs_cal_freq(unsigned long *pulGpu_tar_freq);
 
-/* MET */
-bool mtk_enable_gpu_perf_monitor(bool enable);
-
 /* Quality Tuner */
 bool mtk_gpu_tuner_hint_set(char *packagename,
 	enum GPU_TUNER_FEATURE eFeature);

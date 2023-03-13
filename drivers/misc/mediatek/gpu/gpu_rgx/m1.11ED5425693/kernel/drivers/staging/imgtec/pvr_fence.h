@@ -203,12 +203,7 @@ static inline void pvr_fence_cleanup(void)
 }
 
 #if defined(PVR_FENCE_DEBUG)
-#define PVR_FENCE_CTX_TRACE(c, fmt, ...)                                   \
-	do {                                                               \
-		struct pvr_fence_context *__fctx = (c);                    \
-		pr_err("c %llu: (PVR) " fmt, (u64) __fctx->fence_context,  \
-		       ## __VA_ARGS__);                                    \
-	} while (0)
+#define PVR_FENCE_CTX_TRACE(c, fmt, ...)                          
 #else
 #define PVR_FENCE_CTX_TRACE(c, fmt, ...)
 #endif
@@ -228,8 +223,7 @@ static inline void pvr_fence_cleanup(void)
 	} while (0)
 
 #if defined(PVR_FENCE_DEBUG)
-#define PVR_FENCE_TRACE(f, fmt, ...)                                       \
-	DMA_FENCE_ERR(f, "(PVR) " fmt, ## __VA_ARGS__)
+#define PVR_FENCE_TRACE(f, fmt, ...)                                       
 #else
 #define PVR_FENCE_TRACE(f, fmt, ...)
 #endif

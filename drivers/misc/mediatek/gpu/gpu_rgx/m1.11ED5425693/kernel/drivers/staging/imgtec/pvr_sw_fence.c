@@ -125,7 +125,7 @@ static void pvr_sw_fence_context_destroy_kref(struct kref *kref)
 
 	fence_count = atomic_read(&fence_context->fence_count);
 	if (WARN_ON(fence_count))
-		pr_debug("%s context has %u fence(s) remaining\n",
+		no_printk("%s context has %u fence(s) remaining\n",
 			 fence_context->context_name, fence_count);
 
 	kfree(fence_context);

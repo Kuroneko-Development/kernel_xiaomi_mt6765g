@@ -90,19 +90,14 @@ extern struct mutex cpufreq_para_mutex;
 
 /* Debugging */
 extern unsigned int func_lv_mask;
-#define DEBUG 1
+#define DEBUG 0
 
 #define TAG	"[Power/cpufreq] "
-#define tag_pr_notice(fmt, args...)	pr_notice(TAG fmt, ##args)
-#define tag_pr_info(fmt, args...)	pr_info(TAG fmt, ##args)
-#define tag_pr_debug(fmt, args...)	pr_debug(TAG fmt, ##args)
+#define tag_pr_no_notice(fmt, args...)
+#define tag_no_printk(fmt, args...)
+#define tag_no_printk(fmt, args...)
 
-#define cpufreq_ver(fmt, args...)		\
-do {						\
-	if (func_lv_mask)			\
-		tag_pr_info(fmt, ##args);	\
-} while (0)
-
+#define cpufreq_ver(fmt, args...)	
 #define GEN_DB_ON(condition, fmt, args...)			\
 ({								\
 	int _r = !!(condition);					\
@@ -122,10 +117,10 @@ do {						\
 #ifdef CONFIG_CPU_DVFS_SHOWLOG
 #define FUNC_ENTER(lv) \
 	do { if ((lv) & func_lv_mask) \
-	tag_pr_debug(">> %s()\n", __func__); } while (0)
+	tag_no_printk(">> %s()\n", __func__); } while (0)
 #define FUNC_EXIT(lv) \
 	do { if ((lv) & func_lv_mask) \
-	tag_pr_debug("<< %s():%d\n", __func__, __LINE__); } while (0)
+	tag_no_printk("<< %s():%d\n", __func__, __LINE__); } while (0)
 #else
 #define FUNC_ENTER(lv)
 #define FUNC_EXIT(lv)
@@ -298,22 +293,5 @@ extern int is_in_suspend(void);
 
 extern int cpufreq_procfs_init(void);
 extern char *_copy_from_user_for_proc(const char __user *buffer, size_t count);
-
-/* SRAM debugging*/
-extern void aee_rr_rec_cpu_dvfs_vproc_big(u8 val);
-extern void aee_rr_rec_cpu_dvfs_vproc_little(u8 val);
-extern void aee_rr_rec_cpu_dvfs_oppidx(u8 val);
-extern void aee_rr_rec_cpu_dvfs_cci_oppidx(u8 val);
-extern void aee_rr_rec_cpu_dvfs_status(u8 val);
-extern void aee_rr_rec_cpu_dvfs_step(u8 val);
-extern void aee_rr_rec_cpu_dvfs_cb(u8 val);
-extern void aee_rr_rec_cpufreq_cb(u8 val);
-
-extern u8 aee_rr_curr_cpu_dvfs_oppidx(void);
-extern u8 aee_rr_curr_cpu_dvfs_cci_oppidx(void);
-extern u8 aee_rr_curr_cpu_dvfs_status(void);
-extern u8 aee_rr_curr_cpu_dvfs_step(void);
-extern u8 aee_rr_curr_cpu_dvfs_cb(void);
-extern u8 aee_rr_curr_cpufreq_cb(void);
 
 #endif	/* __MTK_CPUFREQ_INTERNAL_H__ */

@@ -59,7 +59,7 @@ extern "C" {
 #include "htbuffer_init.h"
 
 #if defined(__KERNEL__)
-#define HTBLOGK(SF, args...) do { if (HTB_GROUP_ENABLED(SF)) HTBLogSimple((IMG_HANDLE) NULL, SF, ## args); } while (0)
+#define HTBLOGK(SF, args...) 
 
 /* Host Trace Buffer name */
 #define HTB_STREAM_NAME	"PVRHTBuffer"

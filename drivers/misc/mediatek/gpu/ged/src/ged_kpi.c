@@ -33,10 +33,6 @@
 #include <mtk_gpufreq.h>
 #endif
 
-#ifdef GED_KPI_MET_DEBUG
-#include <mt-plat/met_drv.h>
-#endif
-
 #ifdef GED_KPI_DFRC
 #include <dfrc.h>
 #include <dfrc_drv.h>
@@ -56,12 +52,11 @@ EXPORT_SYMBOL(ged_kpi_PushAppSelfFcFp_fbt);
 #ifdef MTK_GED_KPI
 
 #define GED_TAG "[GED_KPI]"
-#define GED_PR_DEBUG(fmt, args...)\
-	pr_debug(GED_TAG"%s %d : "fmt, __func__, __LINE__, ##args)
+#define GED_no_printk(fmt, args...)
 
 #define GED_KPI_MSEC_DIVIDER 1000000
 #define GED_KPI_SEC_DIVIDER 1000000000
-#define GED_KPI_MAX_FPS 60
+#define GED_KPI_MAX_FPS 66
 #define GED_KPI_DEFAULT_FPS_MARGIN 3
 
 typedef enum {
@@ -224,7 +219,7 @@ typedef struct GED_KPI_GPU_TS_TAG {
 
 /* static int display_fps = GED_KPI_MAX_FPS; */
 static int is_game_control_frame_rate;
-static int target_fps_4_main_head = 60;
+static int target_fps_4_main_head = 66;
 static long long vsync_period = GED_KPI_SEC_DIVIDER / GED_KPI_MAX_FPS;
 static GED_LOG_BUF_HANDLE ghLogBuf;
 static struct workqueue_struct *g_psWorkQueue;
@@ -454,7 +449,7 @@ static void ged_kpi_push_cur_fps_and_detect_app_self_frc(int fps)
 		fps_records[cur_fps_idx] = fps;
 		if (reset == 0) {
 			if (fps > target_fps_4_main_head + 1 || afrc_rst_cnt_down == 120) {
-				ged_kpi_frc_detection_main_head_reset(60);
+				ged_kpi_frc_detection_main_head_reset(66);
 #ifdef GED_KPI_DEBUG
 				GED_LOGE("[AFRC] reset: %d, %d, afrc_rst: %d, %d\n",
 					fps, target_fps_4_main_head + 1, afrc_rst_cnt_down, afrc_rst_over_target_cnt);
@@ -476,7 +471,7 @@ static void ged_kpi_push_cur_fps_and_detect_app_self_frc(int fps)
 					else if (fps_records[i] <= 51)
 						fps_grp[i] = 50;
 					else
-						fps_grp[i] = 60;
+						fps_grp[i] = 66;
 				}
 
 				for (i = 0; i < GED_KPI_GAME_SELF_FRC_DETECT_MONITOR_WINDOW_SIZE - 1; i++) {
@@ -510,7 +505,7 @@ static void ged_kpi_push_cur_fps_and_detect_app_self_frc(int fps)
 				else if (fps <= 51)
 					fps = 50;
 				else
-					fps = 60;
+					fps = 66;
 
 				if (fps < target_fps_4_main_head)
 					afrc_rst_over_target_cnt++;
@@ -548,7 +543,7 @@ static void ged_kpi_push_cur_fps_and_detect_app_self_frc(int fps)
 #ifdef GED_KPI_DEBUG
 				GED_LOGE("[AFRC] fps_grp: %d, %d, %d\n", fps_grp[0], fps_grp[1], fps_grp[2]);
 #endif
-				if (reset == 0 && fps_grp[0] < 60) {
+				if (reset == 0 && fps_grp[0] < 66) {
 					target_fps_4_main_head = fps_grp[0];
 					is_game_control_frame_rate = 1;
 				} else {
@@ -561,7 +556,7 @@ static void ged_kpi_push_cur_fps_and_detect_app_self_frc(int fps)
 		cur_fps_idx++;
 		cur_fps_idx %= GED_KPI_GAME_SELF_FRC_DETECT_MONITOR_WINDOW_SIZE;
 	} else {
-		if (target_fps_4_main_head == 60 || enable_game_self_frc_detect == 0)
+		if (target_fps_4_main_head == 66 || enable_game_self_frc_detect == 0)
 			is_game_control_frame_rate = 0;
 	}
 #ifdef GED_KPI_DEBUG
@@ -588,7 +583,7 @@ static inline void ged_kpi_clean_kpi_info(void)
 void ged_kpi_main_head_reset(void)
 {
 #ifdef GED_KPI_CPU_BOOST
-	ged_kpi_frc_detection_main_head_reset(60);
+	ged_kpi_frc_detection_main_head_reset(66);
 	ged_kpi_check_fallback_main_head_reset();
 #endif
 }
@@ -809,34 +804,6 @@ static inline void ged_kpi_cpu_boost_policy_0(GED_KPI_HEAD *psHead, GED_KPI *psK
 				psHead->target_fps);
 
 		ged_kpi_check_if_fallback_is_needed(boost_accum_cpu, psKPI->t_cpu);
-
-#ifdef GED_KPI_MET_DEBUG
-		if (psHead->t_cpu_latest < 100*1000*1000)
-			met_tag_oneshot(0, "ged_pframe_t_cpu",
-				(long long)((int)psHead->t_cpu_latest + 999999)/GED_KPI_MSEC_DIVIDER);
-		else
-			met_tag_oneshot(0, "ged_pframe_t_cpu", 100);
-
-		if (psHead->t_gpu_latest < 100*1000*1000)
-			met_tag_oneshot(0, "ged_pframe_t_gpu",
-				(long long)((int)psHead->t_gpu_latest + 999999)/GED_KPI_MSEC_DIVIDER);
-		else
-			met_tag_oneshot(0, "ged_pframe_t_gpu", 100);
-
-		if (psKPI->QedBufferDelay < 100*1000*1000)
-			met_tag_oneshot(0, "ged_pframe_QedBufferDelay"
-				, ((int)psKPI->QedBufferDelay + 999999)/GED_KPI_MSEC_DIVIDER);
-		else
-			met_tag_oneshot(0, "ged_pframe_QedBufferDelay", 100);
-
-		if (t_cpu_rem_cur < 100*1000*1000)
-			met_tag_oneshot(0, "ged_pframe_t_cpu_remained_pred",
-				((int)t_cpu_rem_cur + 999999)/GED_KPI_MSEC_DIVIDER);
-		else
-			met_tag_oneshot(0, "ged_pframe_t_cpu_remianed_pred", 100);
-
-		met_tag_oneshot(0, "ged_pframe_t_cpu_target", ((int)t_cpu_target + 999999)/GED_KPI_MSEC_DIVIDER);
-#endif
 	}
 }
 /* ----------------------------------------------------------------------------- */
@@ -1059,8 +1026,8 @@ static void ged_kpi_record_miss_tag(u64 ulID, int i32FrameID
 				INIT_LIST_HEAD(&gs_miss_tag[i].sList);
 			INIT_LIST_HEAD(&miss_tag_head->sList);
 		} else {
-			GED_PR_DEBUG("[GED_KPI][Exception]");
-			GED_PR_DEBUG(
+			GED_no_printk("[GED_KPI][Exception]");
+			GED_no_printk(
 			"ged_alloc_atomic(sizeof(GED_KPI_MISS_TAG)) failed\n");
 			return;
 		}
@@ -1071,8 +1038,8 @@ static void ged_kpi_record_miss_tag(u64 ulID, int i32FrameID
 	list_del(&psMiss_tag->sList);
 
 	if (unlikely(!psMiss_tag)) {
-		GED_PR_DEBUG("[GED_KPI][Exception]:");
-		GED_PR_DEBUG(
+		GED_no_printk("[GED_KPI][Exception]:");
+		GED_no_printk(
 		"ged_alloc_atomic(sizeof(GED_KPI_MISS_TAG)) failed\n");
 		return;
 	}
@@ -1148,8 +1115,8 @@ static void ged_kpi_work_cb(struct work_struct *psWork)
 			}
 		} else {
 #ifdef GED_KPI_DEBUG
-			GED_PR_DEBUG("[GED_KPI][Exception]");
-			GED_PR_DEBUG("no hashtable head for ulID: %lu\n", ulID);
+			GED_no_printk("[GED_KPI][Exception]");
+			GED_no_printk("no hashtable head for ulID: %lu\n", ulID);
 #endif
 		}
 
@@ -1179,9 +1146,9 @@ static void ged_kpi_work_cb(struct work_struct *psWork)
 				ged_hashtable_set(gs_hashtable
 				, (unsigned long)ulID, (void *)psHead);
 			} else {
-				GED_PR_DEBUG(
+				GED_no_printk(
 				"[GED_KPI][Exception] ged_alloc_atomic");
-				GED_PR_DEBUG("(sizeof(GED_KPI_HEAD)) failed\n");
+				GED_no_printk("(sizeof(GED_KPI_HEAD)) failed\n");
 				goto work_cb_end;
 			}
 		}
@@ -1214,8 +1181,8 @@ static void ged_kpi_work_cb(struct work_struct *psWork)
 				psKPI = NULL;
 			}
 			if (psKPI == NULL) {
-				GED_PR_DEBUG("[GED_KPI][Exception]");
-				GED_PR_DEBUG(
+				GED_no_printk("[GED_KPI][Exception]");
+				GED_no_printk(
 					"TYPE_1: psKPI NULL, frameID: %lu\n",
 					psTimeStamp->i32FrameID);
 				goto work_cb_end;
@@ -1373,8 +1340,8 @@ static void ged_kpi_work_cb(struct work_struct *psWork)
 		}
 #ifdef GED_KPI_DEBUG
 		else {
-			GED_PR_DEBUG("[GED_KPI][Exception]");
-			GED_PR_DEBUG("no hashtable head for ulID: %lu\n", ulID);
+			GED_no_printk("[GED_KPI][Exception]");
+			GED_no_printk("no hashtable head for ulID: %lu\n", ulID);
 		}
 #endif
 		break;
@@ -1554,13 +1521,13 @@ static void ged_kpi_work_cb(struct work_struct *psWork)
 					ged_kpi_statistics_and_remove(psHead
 						, psKPI);
 			} else {
-				GED_PR_DEBUG(
+				GED_no_printk(
 		"[GED_KPI][Exception] TYPE_2: psKPI NULL, frameID: %lu\n",
 				psTimeStamp->i32FrameID);
 			}
 		} else {
 #ifdef GED_KPI_DEBUG
-			GED_PR_DEBUG(
+			GED_no_printk(
 		"[GED_KPI][Exception] no hashtable head for ulID: %lu\n",
 			ulID);
 #endif
@@ -1628,7 +1595,7 @@ static void ged_kpi_work_cb(struct work_struct *psWork)
 
 #ifdef GED_KPI_DEBUG
 		if (!psHead) {
-			GED_PR_DEBUG(
+			GED_no_printk(
 			"[GED_KPI][Exception] TYPE_S: no hashtable head for ulID: %lu\n"
 			, ulID);
 		}
@@ -1720,7 +1687,7 @@ static GED_ERROR ged_kpi_push_timestamp(
 #endif
 
 		if (!psTimeStamp) {
-			GED_PR_DEBUG("[GED_KPI]: GED_ERROR_OOM in %s\n",
+			GED_no_printk("[GED_KPI]: GED_ERROR_OOM in %s\n",
 				__func__);
 			return GED_ERROR_OOM;
 		}
@@ -1882,7 +1849,6 @@ GED_ERROR ged_kpi_dequeue_buffer_ts(int pid, u64 ullWdnd, int i32FrameID,
 	psMonitor = (GED_KPI_GPU_TS *)ged_alloc(sizeof(GED_KPI_GPU_TS));
 
 	if (!psMonitor) {
-		pr_info_ratelimited("[GED_KPI]: GED_ERROR_OOM in %s\n", __func__);
 		return GED_ERROR_OOM;
 	}
 
@@ -1930,7 +1896,6 @@ GED_ERROR ged_kpi_queue_buffer_ts(int pid, u64 ullWdnd, int i32FrameID,
 	psMonitor = (GED_KPI_GPU_TS *)ged_alloc(sizeof(GED_KPI_GPU_TS));
 
 	if (!psMonitor) {
-		pr_info_ratelimited("[GED_KPI]: GED_ERROR_OOM in %s\n", __func__);
 		return GED_ERROR_OOM;
 	}
 

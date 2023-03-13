@@ -44,12 +44,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "rgx_fwif_km.h"
 #include "rgx_hwperf.h"
+#define POWERVR_NO_TRACE
 
 /* We need to make these functions do nothing if CONFIG_EVENT_TRACING isn't
  * enabled, just like the actual trace event functions that the kernel
  * defines for us.
  */
-#ifdef CONFIG_EVENT_TRACING
+#ifndef POWERVR_NO_TRACE
 bool trace_rogue_are_fence_checks_traced(void);
 
 bool trace_rogue_are_fence_updates_traced(void);

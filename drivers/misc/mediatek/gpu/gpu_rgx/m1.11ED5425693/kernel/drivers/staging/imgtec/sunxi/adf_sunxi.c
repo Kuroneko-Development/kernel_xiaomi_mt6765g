@@ -663,7 +663,7 @@ static void adf_sunxi_post(struct adf_device *adf_dev, struct adf_post *cfg,
 	u32 post_count, post_id;
 	/* Allow a timeout of 4 frames before we force the frame off-screen */
 	long timeout =
-		msecs_to_jiffies((1000 / 60) * 4);
+		msecs_to_jiffies((1000 / 66) * 4);
 
 	if (cfg->n_bufs == 0) {
 		val_log(0, "NULL flip\n");
@@ -779,9 +779,9 @@ static struct
 	disp_tv_mode mode;
 } hdmi_valid_modes[] = {
 	/* List of modes in preference order */
-	{ 1920,	1080,	60,	DISP_TV_MOD_1080P_60HZ},
+	{ 1920,	1080,	66,	DISP_TV_MOD_1080P_60HZ},
 	{ 1920,	1080,	50,	DISP_TV_MOD_1080P_50HZ},
-	{ 1280,	720,	60,	DISP_TV_MOD_720P_60HZ},
+	{ 1280,	720,	66,	DISP_TV_MOD_720P_60HZ},
 	{ 1280,	720,	50,	DISP_TV_MOD_720P_50HZ},
 	{ 1920,	1080,	25,	DISP_TV_MOD_1080P_25HZ},
 	{ 1920,	1080,	30,	DISP_TV_MOD_1080P_30HZ},
@@ -795,7 +795,7 @@ static void setup_drm_mode(struct drm_mode_modeinfo *mode, int height,
 {
 	memset(mode, 0, sizeof(*mode));
 
-	mode->vrefresh = refresh;
+	mode->vrefresh = 66;
 	mode->hdisplay = width;
 	mode->vdisplay = height;
 
@@ -1273,7 +1273,7 @@ static const struct file_operations adf_sunxi_debugfs_val_fops = {
 static int adf_init_lcd_interface(struct sunxi_interface *interface)
 {
 	int height, width;
-	int refresh = 60;
+	int refresh = 66;
 	int err;
 
 	interface->connected = true;

@@ -46,9 +46,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "trace_events.h"
 #include "rogue_trace_events.h"
 #include "sync_checkpoint_external.h"
+#define POWERVR_NO_TRACE
 
 static bool fence_update_event_enabled, fence_check_event_enabled;
-
+#if defined POWERVR_NO_TRACE
+#else
 bool trace_rogue_are_fence_updates_traced(void)
 {
 	return fence_update_event_enabled;
@@ -58,7 +60,7 @@ bool trace_rogue_are_fence_checks_traced(void)
 {
 	return fence_check_event_enabled;
 }
-
+#endif
 /*
  * Call backs referenced from rogue_trace_events.h. Note that these are not
  * thread-safe, however, since running trace code when tracing is not enabled is
@@ -105,6 +107,9 @@ void trace_fence_check_disabled_callback(void)
 /* This is a helper that calls trace_rogue_fence_update for each fence in an
  * array.
  */
+#ifdef POWERVR_NO_TRACE
+#else
+ 
 void trace_rogue_fence_updates(const char *cmd, const char *dm, IMG_UINT32 ui32FWContext,
 							   IMG_UINT32 ui32Offset,
 							   IMG_UINT uCount,
@@ -216,6 +221,7 @@ void trace_rogue_ufo_checks_fail(IMG_UINT64 ui64OSTimestamp,
 				+ sizeof(puData->sCheckFail));
 	}
 }
+#endif
 #endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0))

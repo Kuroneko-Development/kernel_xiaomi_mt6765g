@@ -899,7 +899,7 @@ static struct seq_operations gsDvfs_gpu_util_ReadOps =
 };
 //-----------------------------------------------------------------------------
 
-static uint32_t _fps_upper_bound = 60;
+static uint32_t _fps_upper_bound = 66;
 
 static void *ged_fps_ub_seq_start(struct seq_file *seq, loff_t *pos)
 {
@@ -924,8 +924,6 @@ static void *ged_fps_ub_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 
 static int ged_fps_ub_seq_show(struct seq_file *seq, void *v)
 {
-	printk("+%s", __func__);
-	seq_printf(seq, "%u\n", _fps_upper_bound);
 	return 0;
 }
 
@@ -942,15 +940,6 @@ static ssize_t ged_fps_ub_write(const char __user *pszBuffer, size_t uiCount,
 		loff_t uiPosition, void *pvData)
 {
 	char str_num[MAX_FPS_DIGITS + 1];
-
-	if (0 == ged_copy_from_user(str_num, pszBuffer, MAX_FPS_DIGITS))
-	{
-		str_num[MAX_FPS_DIGITS] = 0;
-		_fps_upper_bound = simple_strtol(str_num, NULL, 10);
-		ged_dvfs_probe_signal(GED_FPS_CHANGE_SIGNAL_EVENT);
-		printk("GED: fps is set to %d", _fps_upper_bound);
-	}
-
 	return uiCount;
 }
 

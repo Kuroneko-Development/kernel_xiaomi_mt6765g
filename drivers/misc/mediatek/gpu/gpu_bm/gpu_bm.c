@@ -70,12 +70,12 @@ static int _MTKGPUQoS_initDebugFS(void)
 
 	dir = proc_mkdir("mgq", NULL);
 	if (!dir) {
-		pr_debug("@%s: create /proc/mgq failed\n", __func__);
+		no_printk("@%s: create /proc/mgq failed\n", __func__);
 		return -ENOMEM;
 	}
 
 	if (!proc_create("job_status", 0664, dir, &_mgq_proc_fops))
-		pr_debug("@%s: create /proc/mgq/job_status failed\n", __func__);
+		no_printk("@%s: create /proc/mgq/job_status failed\n", __func__);
 
 	return 0;
 }
@@ -100,7 +100,7 @@ static void setupfw_timer_callback(unsigned long _data)
 	qos_d.u.gpu_info.size = (unsigned int)data.size;
 	ret = qos_ipi_to_sspm_command(&qos_d, 4);
 
-	pr_debug("%s: addr:0x%x, addr_hi:0x%x, ret:%d\n",
+	no_printk("%s: addr:0x%x, addr_hi:0x%x, ret:%d\n",
 		__func__,
 		qos_d.u.gpu_info.addr,
 		qos_d.u.gpu_info.addr_hi,
@@ -109,7 +109,7 @@ static void setupfw_timer_callback(unsigned long _data)
 	if (ret == 0) {
 		kfree((void *)_data);
 	} else {
-		pr_debug("%s: sspm_ipi fail (%d)\n", __func__, ret);
+		no_printk("%s: sspm_ipi fail (%d)\n", __func__, ret);
 
 		timer_setupFW.expires = jiffies + HZ * 5;
 		add_timer(&timer_setupFW);
@@ -123,7 +123,7 @@ static void _MTKGPUQoS_setupFW(phys_addr_t phyaddr, size_t size)
 			kmalloc(sizeof(struct setupfw_t), GFP_KERNEL);
 
 	if (_data == NULL) {
-		pr_debug("%s: kmalloc fail\n", __func__);
+		no_printk("%s: kmalloc fail\n", __func__);
 		return;
 	}
 	_data->phyaddr = phyaddr;
