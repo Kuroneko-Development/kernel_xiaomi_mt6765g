@@ -15,9 +15,9 @@
 #define PFX "s5k3p8_camera_pdaf"
 #define pr_fmt(fmt) PFX "[%s] " fmt, __func__
 
-/* #define LOG_1 pr_debug("s5k3p8,MIPI 4LANE\n") */
+/* #define LOG_1 no_printk("s5k3p8,MIPI 4LANE\n") */
 /* #define LOG_2 \
- * pr_debug("preview 2096*1552@30fps,640Mbps/lane;
+ * no_printk("preview 2096*1552@30fps,640Mbps/lane;
  * video 4192*3104@30fps,1.2Gbps/lane; capture 13M@30fps,1.2Gbps/lane\n")
  */
 /****************************   Modify end    **************/
@@ -104,12 +104,12 @@ static bool s5k3p8_read_eeprom(kal_uint16 addr, BYTE *data, kal_uint32 size)
 
 	for (i = 0; i < 1024; i += 2) {
 		if (!s5k3p8_selective_read_eeprom(offset, &data[i])) {
-			pr_debug("read_eeprom 0x%0x %d fail\n",
+			no_printk("read_eeprom 0x%0x %d fail\n",
 				offset, data[i]);
 
 			return false;
 		}
-		/*pr_debug("read_eeprom 0x%0x 0x%x.\n",offset, data[i]); */
+		/*no_printk("read_eeprom 0x%0x 0x%x.\n",offset, data[i]); */
 		offset += 2;
 	}
 	get_done = true;
@@ -123,19 +123,19 @@ bool s5k3p8_read_otp_pdaf_data(
 	BYTE *data,
 	kal_uint32 size)
 {
-	pr_debug("read_otp_pdaf_data enter");
+	no_printk("read_otp_pdaf_data enter");
 	/* if(!get_done || last_size != size || last_offset != addr) { */
 	/* if(!_read_eeprom(addr, eeprom_data, size)){ */
 	if (!s5k3p8_read_eeprom(addr, data, size)) {
 		get_done = 0;
 		last_size = 0;
 		last_offset = 0;
-		pr_debug("read_otp_pdaf_data fail");
+		no_printk("read_otp_pdaf_data fail");
 		return false;
 	}
 	/* } */
 	/*  memcpy(data, eeprom_data, size);  */
-	pr_debug("read_otp_pdaf_data end");
+	no_printk("read_otp_pdaf_data end");
 
 	return true;
 }

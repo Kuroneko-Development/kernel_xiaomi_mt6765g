@@ -854,7 +854,7 @@ static inline int adopt_CAMERA_HW_FeatureControl(void *pBuf)
 				pFeatureCtrl->InvokeCamera,
 				__current);
 		else
-			pr_debug(
+			no_printk(
 				"%s, set drive current by pinctrl was not supported\n",
 				__func__);
 

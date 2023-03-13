@@ -64,7 +64,7 @@ static kal_uint32 streaming_control(kal_bool enable);
 static kal_uint16 imx576_HDR_synthesis = 1;
 static kal_uint16 imx576_shutter_initialize;
 
-#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) no_printk(PFX "[%s] " format, __func__, ##args)
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
 
 static struct imgsensor_info_struct imgsensor_info = {

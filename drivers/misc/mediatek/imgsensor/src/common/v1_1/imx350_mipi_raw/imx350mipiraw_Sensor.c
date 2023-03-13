@@ -56,7 +56,7 @@
 
 #undef IMX350_24_FPS
 
-#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) no_printk(PFX "[%s] " format, __func__, ##args)
 
 #define H_FOV 63
 #define V_FOV 49

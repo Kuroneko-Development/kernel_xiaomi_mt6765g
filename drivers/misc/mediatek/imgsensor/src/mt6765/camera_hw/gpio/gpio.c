@@ -66,7 +66,7 @@ static enum IMGSENSOR_RETURN gpio_release(void *pinstance)
 				  !IS_ERR(pgpio->ppinctrl_state_cam[j][i]) &&
 				pinctrl_select_state(pgpio->ppinctrl,
 					pgpio->ppinctrl_state_cam[j][i])) {
-				pr_info(
+				no_printk(
 				    "%s : pinctrl err, PinIdx %d name %s\n",
 				    __func__,
 				    i,
@@ -112,7 +112,7 @@ static enum IMGSENSOR_RETURN gpio_init(void *pinstance)
 
 				if (pgpio->ppinctrl_state_cam[j][i] == NULL ||
 				    IS_ERR(pgpio->ppinctrl_state_cam[j][i])) {
-					pr_info(
+					no_printk(
 					    "%s : pinctrl err, %s\n",
 					    __func__,
 					    str_pinctrl_name);
@@ -133,7 +133,7 @@ static enum IMGSENSOR_RETURN gpio_init(void *pinstance)
 
 		if (pgpio->ppinctrl_state_switch[i] == NULL ||
 			IS_ERR(pgpio->ppinctrl_state_switch[i])) {
-			pr_info(
+			no_printk(
 				"%s : pinctrl err, %s\n",
 				__func__,
 			gpio_pinctrl_list_switch[i].ppinctrl_lookup_names);
@@ -186,7 +186,7 @@ static enum IMGSENSOR_RETURN gpio_set(
 			((pin - IMGSENSOR_HW_PIN_PDN) << 1) + gpio_state];
 
 	}
-	/*pr_debug("%s : pinctrl , state indx %d\n",
+	/*no_printk("%s : pinctrl , state indx %d\n",
 	 *	    __func__,
 	 *	    ctrl_state_offset +
 	 *	    ((pin - IMGSENSOR_HW_PIN_PDN) << 1) + gpio_state);

@@ -65,7 +65,7 @@ static struct regulator *regVCAMAF;
 
 static void imgsensor_oc_handler1(void)
 {
-	pr_debug("[regulator]%s enter vcama oc %d\n",
+	no_printk("[regulator]%s enter vcama oc %d\n",
 		__func__,
 		gimgsensor.status.oc);
 	gimgsensor.status.oc = 1;
@@ -79,7 +79,7 @@ static void imgsensor_oc_handler1(void)
 }
 static void imgsensor_oc_handler2(void)
 {
-	pr_debug("[regulator]%s enter vcamd oc %d\n",
+	no_printk("[regulator]%s enter vcamd oc %d\n",
 		__func__,
 		gimgsensor.status.oc);
 	gimgsensor.status.oc = 1;
@@ -92,7 +92,7 @@ static void imgsensor_oc_handler2(void)
 }
 static void imgsensor_oc_handler3(void)
 {
-	pr_debug("[regulator]%s enter vcamio oc %d\n",
+	no_printk("[regulator]%s enter vcamio oc %d\n",
 		__func__,
 		gimgsensor.status.oc);
 	gimgsensor.status.oc = 1;
@@ -128,7 +128,7 @@ enum IMGSENSOR_RETURN imgsensor_oc_interrupt(
 				pmic_enable_interrupt(
 					int_oc_type[i], 1, OC_MODULE);
 				regulator_put(preg);
-				pr_debug(
+				no_printk(
 					"[regulator] %s idx=%d %s enable=%d\n",
 					__func__,
 					sensor_idx,
@@ -154,7 +154,7 @@ enum IMGSENSOR_RETURN imgsensor_oc_interrupt(
 				pmic_enable_interrupt(
 					int_oc_type[i], 0, OC_MODULE);
 				regulator_put(preg);
-				pr_debug("[regulator] %s idx=%d %s enable=%d\n",
+				no_printk("[regulator] %s idx=%d %s enable=%d\n",
 					__func__,
 					sensor_idx,
 					regulator_control[i].pregulator_type,
@@ -293,7 +293,7 @@ static enum IMGSENSOR_RETURN regulator_set(
 			//atomic_inc(enable_cnt);
 		} else {
 			if (regulator_is_enabled(regVCAMAF)) {
-				/*pr_debug("[regulator]%d is enabled\n", pin);*/
+				/*no_printk("[regulator]%d is enabled\n", pin);*/
 
 				if (regulator_disable(regVCAMAF)) {
 					pr_err(
@@ -357,7 +357,7 @@ static enum IMGSENSOR_RETURN regulator_set(
 			atomic_inc(enable_cnt);
 		} else {
 			if (regulator_is_enabled(pregulator)) {
-				/*pr_debug("[regulator]%d is enabled\n", pin);*/
+				/*no_printk("[regulator]%d is enabled\n", pin);*/
 
 				if (regulator_disable(pregulator)) {
 					pr_err(

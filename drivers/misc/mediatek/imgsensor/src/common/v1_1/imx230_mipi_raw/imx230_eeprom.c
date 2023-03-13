@@ -27,7 +27,7 @@
 #include "kd_camera_typedef.h"
 
 /*
- * #define LOG_INF(format, args...) pr_debug(\
+ * #define LOG_INF(format, args...) no_printk(\
  * PFX "[%s] " format, __func__, ##args)
  */
 
@@ -77,11 +77,11 @@ static bool _read_imx230_eeprom(kal_uint16 addr, BYTE *data, int size)
 	int i = 0;
 	int offset = addr;
 
-	pr_debug("enter _read_eeprom size = %d\n", size);
+	no_printk("enter _read_eeprom size = %d\n", size);
 	for (i = 0; i < size; i++) {
 		if (!selective_read_eeprom(offset, &data[i]))
 			return false;
-		pr_debug("read_eeprom 0x%0x %d\n", offset, data[i]);
+		no_printk("read_eeprom 0x%0x %d\n", offset, data[i]);
 		offset++;
 	}
 	get_done = true;
@@ -97,7 +97,7 @@ void read_imx230_SPC(BYTE *data)
 	int addr = 0x763 + 96;
 	int size = 352;
 
-	pr_debug("read imx230 SPC, size = %d\n", size);
+	no_printk("read imx230 SPC, size = %d\n", size);
 #if 1
 	if (!get_done || last_size != size || last_offset != addr) {
 		if (!_read_imx230_eeprom(addr, IMX230_SPC_data, size)) {
@@ -118,7 +118,7 @@ void read_imx230_DCC(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	addr = 0x448;
 	size = 96;
 
-	pr_debug("read imx230 DCC, size = %d\n", size);
+	no_printk("read imx230 DCC, size = %d\n", size);
 
 	if (!get_done || last_size != size || last_offset != addr) {
 		if (!_read_imx230_eeprom(addr, IMX230_DCC_data, size)) {

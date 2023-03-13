@@ -49,7 +49,7 @@
 #include "s5k5e9mipiraw_Sensor.h"
 
 #define PFX "S5K5E9Y_camera_sensor"
-#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) no_printk(PFX "[%s] " format, __func__, ##args)
 
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
 

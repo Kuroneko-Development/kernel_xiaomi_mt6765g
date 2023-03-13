@@ -55,7 +55,7 @@
 #define LOG_1 LOG_INF("IMX586,MIPI 4LANE\n")
 /****************************   Modify end	**************************/
 
-#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) no_printk(PFX "[%s] " format, __func__, ##args)
 
 
 #define CUS1_12M_60_FPS 1/* 0:CUS1_12M_100_FPS, 1:CUS1_12M_60_FPS */
@@ -3641,7 +3641,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 			*feature_return_para_32 = 2; /*BINNING_AVERAGED*/
 			break;
 		}
-		pr_debug("SENSOR_FEATURE_GET_BINNING_TYPE AE_binning_type:%d,\n",
+		no_printk("SENSOR_FEATURE_GET_BINNING_TYPE AE_binning_type:%d,\n",
 			*feature_return_para_32);
 		*feature_para_len = 4;
 

@@ -97,7 +97,7 @@ static bool _read_imx230_eeprom(kal_uint16 addr, BYTE *data, int size)
 					 IMX230_EEPROM_READ_ID);
 		}
 		if (ret < 0) {
-			pr_debug("read spc failed!\n");
+			no_printk("read spc failed!\n");
 			return false;
 		}
 
@@ -111,7 +111,7 @@ static bool _read_imx230_eeprom(kal_uint16 addr, BYTE *data, int size)
 		get_done_dcc = true;
 		last_size_dcc = size;
 	}
-	pr_debug("exit _read_eeprom size = %d\n", size);
+	no_printk("exit _read_eeprom size = %d\n", size);
 	return true;
 }
 
@@ -122,7 +122,7 @@ void read_imx230_SPC(BYTE *data)
 	int addr = SPC_START_ADDR;
 	int size = 352;
 
-	pr_debug("read imx230 SPC, size = %d\n", size);
+	no_printk("read imx230 SPC, size = %d\n", size);
 
 #if 1
 	if (!get_done_spc || last_size_spc != size) {
@@ -142,7 +142,7 @@ void read_imx230_DCC(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	addr = DCC_START_ADDR;
 	size = 96;
 
-	pr_debug("read imx230 DCC, size = %d\n", size);
+	no_printk("read imx230 DCC, size = %d\n", size);
 
 	if (!get_done_dcc || last_size_dcc != size) {
 		if (!_read_imx230_eeprom(addr, IMX230_DCC_data, size)) {

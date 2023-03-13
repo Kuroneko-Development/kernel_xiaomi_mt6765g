@@ -26,7 +26,7 @@
 
 #define PFX "hi1337_camera_sensor"
 #define LOG_INF(format, args...)    \
-	pr_debug(PFX "[%s] " format, __func__, ##args)
+	no_printk(PFX "[%s] " format, __func__, ##args)
 
 //PDAF
 #define ENABLE_PDAF 0
@@ -2656,14 +2656,14 @@ static void hi1337_fusion_id_read(void)
 	int i;
 	for (i=0; i<9; i++) {
 		fusion_id_main[i] = read_cmos_sensor_hi1337(0x10+i);
-		pr_info("%s %d fusion_id_front[%d]=0x%2x\n",__func__, __LINE__, i, fusion_id_main[i]);
+		no_printk("%s %d fusion_id_front[%d]=0x%2x\n",__func__, __LINE__, i, fusion_id_main[i]);
 	}
 }
 static int hi1337_vendor_id_read(int addr)
 {
 	int  flag;
 	flag = read_cmos_sensor_hi1337(0x1);
-	pr_info("%s %d flag=0x%2x\n", __func__, __LINE__, flag);
+	no_printk("%s %d flag=0x%2x\n", __func__, __LINE__, flag);
 	return flag;
 }
 
@@ -3303,7 +3303,7 @@ static kal_uint32 set_test_pattern_mode(kal_bool enable)
 
 static kal_uint32 streaming_control(kal_bool enable)
 {
-	pr_debug("streaming_enable(0=Sw Standby,1=streaming): %d\n", enable);
+	no_printk("streaming_enable(0=Sw Standby,1=streaming): %d\n", enable);
 
 	if (enable)
 		write_cmos_sensor(0x0b00, 0x0100); // stream on
